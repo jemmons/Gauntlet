@@ -1,6 +1,6 @@
 import Foundation
 
-protocol StateMachineDelegateProtocol: class{
+public protocol StateMachineDelegateProtocol: class{
   typealias StateType:StateMachineDataSourceProtocol
   func didTransitionFrom(from:StateType, to:StateType)
 }

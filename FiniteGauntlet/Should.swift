@@ -1,5 +1,5 @@
 import Foundation
 
-enum Should<T>{
+public enum Should<T>{
   case Continue, Abort, Redirect(T)
 }

@@ -1,5 +1,5 @@
 import Foundation
 
-protocol StateMachineDataSourceProtocol{
+public protocol StateMachineDataSourceProtocol{
   func shouldTransitionFrom(from:Self, to:Self)->Should<Self>
 }

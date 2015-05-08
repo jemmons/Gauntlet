@@ -1,14 +1,14 @@
 import Foundation
 
 
-class StateMachine<P:StateMachineDelegateProtocol>{
+public class StateMachine<P:StateMachineDelegateProtocol>{
   private var _state:P.StateType{
     didSet{
       delegate.didTransitionFrom(oldValue, to: _state)
     }
   }
   unowned let delegate:P
-  var state:P.StateType{
+  public var state:P.StateType{
     get{
       return _state
     }
