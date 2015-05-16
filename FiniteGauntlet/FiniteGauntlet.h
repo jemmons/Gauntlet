@@ -1,10 +1,3 @@
-//
-//  FiniteGauntlet.h
-//  FiniteGauntlet
-//
-//  Created by Joshua Emmons on 5/8/15.
-//  Copyright (c) 2015 MCMXCIX. All rights reserved.
-//
 
 #import <UIKit/UIKit.h>
 

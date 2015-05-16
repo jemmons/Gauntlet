@@ -18,7 +18,7 @@ public class StateMachine<P:StateMachineDelegateProtocol>{
   }
   
   
-  init(initialState:P.StateType, delegate:P){
+  public init(initialState:P.StateType, delegate:P){
     _state = initialState //set the primitive to avoid calling the delegate.
     self.delegate = delegate
   }

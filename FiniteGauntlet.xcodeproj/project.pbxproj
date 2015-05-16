@@ -13,6 +13,7 @@
 		73E4FD2A1AFD51960058C1AF /* Should.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD291AFD51960058C1AF /* Should.swift */; };
 		73E4FD2C1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */; };
 		73E4FD2E1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */; };
+		73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,7 @@
 		73E4FD291AFD51960058C1AF /* Should.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Should.swift; sourceTree = "<group>"; };
 		73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachineDataSourceProtocol.swift; sourceTree = "<group>"; };
 		73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachineDelegateProtocol.swift; sourceTree = "<group>"; };
+		73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				73E4FD1B1AFD4E040058C1AF /* Supporting Files */,
+				73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */,
 			);
 			path = FiniteGauntletTests;
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,6 +372,7 @@
 		73E4FD251AFD4E040058C1AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -379,12 +384,14 @@
 				INFOPLIST_FILE = FiniteGauntletTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		73E4FD261AFD4E040058C1AF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -414,6 +421,7 @@
 				73E4FD231AFD4E040058C1AF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		73E4FD241AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "FiniteGauntletTests" */ = {
 			isa = XCConfigurationList;
@@ -422,6 +430,7 @@
 				73E4FD261AFD4E040058C1AF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
