@@ -2,24 +2,22 @@ import Foundation
 import XCTest
 import FiniteGauntlet
 
-class ExistentialTests : XCTestCase{
-  var machine:StateMachine<ExistentialTests>!
-  
+class TransitionTests : XCTestCase{
+  var machine:StateMachine<TransitionTests>!
+  var success:Bool = false
+
   override func setUp() {
     machine = StateMachine(initialState: .Ready, delegate: self)
   }
   
-  func testInitialState(){
-    switch machine.state{
-    case .Ready:
-      XCTAssert(true)
-    default:
-      XCTFail("Not Ready")
-    }
+  
+  func testDoubleTransition(){
+    machine.state = .Ready
+    XCTAssertTrue(success)
   }
 }
 
-extension ExistentialTests : StateMachineDelegateProtocol{
+extension TransitionTests : StateMachineDelegateProtocol{
   typealias StateType = State
   enum State : StateMachineDataSourceProtocol{
     case Ready, Working, Success(String), Failure(NSError)
@@ -27,8 +25,13 @@ extension ExistentialTests : StateMachineDelegateProtocol{
       return .Continue
     }
   }
-  
+
   func didTransitionFrom(from: State, to: State) {
-    
+    switch (from,to){
+    case (.Ready, .Ready):
+      success = true
+    default:
+      break
+    }
   }
 }
