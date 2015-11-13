@@ -23,8 +23,8 @@ extension ExistentialTests : StateMachineDelegateProtocol{
   typealias StateType = State
   enum State : StateMachineDataSourceProtocol{
     case Ready, Working, Success(String), Failure(NSError)
-    func shouldTransitionFrom(from: State, to: State) -> Should<State> {
-      return .Continue
+    func shouldTransitionFrom(from: State, to: State) -> Bool {
+      return true
     }
   }
   

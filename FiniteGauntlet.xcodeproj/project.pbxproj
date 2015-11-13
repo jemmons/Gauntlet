@@ -11,7 +11,6 @@
 		73E4FD111AFD4E040058C1AF /* FiniteGauntlet.h in Headers */ = {isa = PBXBuildFile; fileRef = 73E4FD101AFD4E040058C1AF /* FiniteGauntlet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73E4FD171AFD4E040058C1AF /* FiniteGauntlet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73E4FD0B1AFD4E040058C1AF /* FiniteGauntlet.framework */; };
 		73E4FD281AFD4E1B0058C1AF /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */; };
-		73E4FD2A1AFD51960058C1AF /* Should.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD291AFD51960058C1AF /* Should.swift */; };
 		73E4FD2C1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */; };
 		73E4FD2E1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */; };
 		73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */; };
@@ -35,7 +34,6 @@
 		73E4FD161AFD4E040058C1AF /* FiniteGauntletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FiniteGauntletTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		73E4FD1C1AFD4E040058C1AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
-		73E4FD291AFD51960058C1AF /* Should.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Should.swift; sourceTree = "<group>"; };
 		73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachineDataSourceProtocol.swift; sourceTree = "<group>"; };
 		73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachineDelegateProtocol.swift; sourceTree = "<group>"; };
 		73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialTests.swift; sourceTree = "<group>"; };
@@ -85,7 +83,6 @@
 				73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */,
 				73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */,
 				73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */,
-				73E4FD291AFD51960058C1AF /* Should.swift */,
 				73E4FD0E1AFD4E040058C1AF /* Supporting Files */,
 			);
 			path = FiniteGauntlet;
@@ -173,7 +170,8 @@
 		73E4FD021AFD4E040058C1AF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastSwiftUpdateCheck = 0710;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = MCMXCIX;
 				TargetAttributes = {
 					73E4FD0A1AFD4E040058C1AF = {
@@ -226,7 +224,6 @@
 			files = (
 				73E4FD2E1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift in Sources */,
 				73E4FD2C1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift in Sources */,
-				73E4FD2A1AFD51960058C1AF /* Should.swift in Sources */,
 				73E4FD281AFD4E1B0058C1AF /* StateMachine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -273,6 +270,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -288,7 +286,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -330,7 +328,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -351,6 +349,7 @@
 				INFOPLIST_FILE = FiniteGauntlet/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -368,6 +367,7 @@
 				INFOPLIST_FILE = FiniteGauntlet/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -377,16 +377,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = FiniteGauntletTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -396,12 +393,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
 				INFOPLIST_FILE = FiniteGauntletTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

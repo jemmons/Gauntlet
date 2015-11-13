@@ -25,14 +25,8 @@ public class StateMachine<P:StateMachineDelegateProtocol>{
   
   
   private func delegateTransitionTo(to:P.StateType){
-    switch _state.shouldTransitionFrom(_state, to:to){
-    case .Continue:
+    if _state.shouldTransitionFrom(_state, to:to){
       _state = to
-    case .Redirect(let newState):
-      _state = to
-      state = newState
-    case .Abort:
-      break;
     }
   }
 }
