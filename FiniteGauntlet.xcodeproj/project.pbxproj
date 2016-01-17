@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		73584FB11B079CD800B3CA74 /* TransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73584FB01B079CD800B3CA74 /* TransitionTests.swift */; };
+		73E3D0101C4C122600DFA67A /* CaptureSelfTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */; };
 		73E4FD111AFD4E040058C1AF /* FiniteGauntlet.h in Headers */ = {isa = PBXBuildFile; fileRef = 73E4FD101AFD4E040058C1AF /* FiniteGauntlet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73E4FD171AFD4E040058C1AF /* FiniteGauntlet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73E4FD0B1AFD4E040058C1AF /* FiniteGauntlet.framework */; };
 		73E4FD281AFD4E1B0058C1AF /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */; };
-		73E4FD2C1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */; };
-		73E4FD2E1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */; };
+		73E4FD2C1AFD51C00058C1AF /* StateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2B1AFD51C00058C1AF /* StateType.swift */; };
 		73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,14 +28,14 @@
 
 /* Begin PBXFileReference section */
 		73584FB01B079CD800B3CA74 /* TransitionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitionTests.swift; sourceTree = "<group>"; };
+		73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureSelfTests.swift; sourceTree = "<group>"; };
 		73E4FD0B1AFD4E040058C1AF /* FiniteGauntlet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FiniteGauntlet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		73E4FD0F1AFD4E040058C1AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		73E4FD101AFD4E040058C1AF /* FiniteGauntlet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FiniteGauntlet.h; sourceTree = "<group>"; };
 		73E4FD161AFD4E040058C1AF /* FiniteGauntletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FiniteGauntletTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		73E4FD1C1AFD4E040058C1AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
-		73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachineDataSourceProtocol.swift; sourceTree = "<group>"; };
-		73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachineDelegateProtocol.swift; sourceTree = "<group>"; };
+		73E4FD2B1AFD51C00058C1AF /* StateType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateType.swift; sourceTree = "<group>"; };
 		73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -81,8 +81,7 @@
 			children = (
 				73E4FD101AFD4E040058C1AF /* FiniteGauntlet.h */,
 				73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */,
-				73E4FD2D1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift */,
-				73E4FD2B1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift */,
+				73E4FD2B1AFD51C00058C1AF /* StateType.swift */,
 				73E4FD0E1AFD4E040058C1AF /* Supporting Files */,
 			);
 			path = FiniteGauntlet;
@@ -102,6 +101,7 @@
 				73E4FD1B1AFD4E040058C1AF /* Supporting Files */,
 				73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */,
 				73584FB01B079CD800B3CA74 /* TransitionTests.swift */,
+				73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */,
 			);
 			path = FiniteGauntletTests;
 			sourceTree = "<group>";
@@ -222,8 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				73E4FD2E1AFD51E60058C1AF /* StateMachineDelegateProtocol.swift in Sources */,
-				73E4FD2C1AFD51C00058C1AF /* StateMachineDataSourceProtocol.swift in Sources */,
+				73E4FD2C1AFD51C00058C1AF /* StateType.swift in Sources */,
 				73E4FD281AFD4E1B0058C1AF /* StateMachine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,6 +231,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				73E3D0101C4C122600DFA67A /* CaptureSelfTests.swift in Sources */,
 				73584FB11B079CD800B3CA74 /* TransitionTests.swift in Sources */,
 				73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */,
 			);
