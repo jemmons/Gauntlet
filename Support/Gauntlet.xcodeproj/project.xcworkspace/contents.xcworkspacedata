@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:FiniteGauntlet.xcodeproj">
+      location = "self:/Users/skia/code/mcmxcix/FiniteGauntlet/Gauntlet.xcodeproj">
    </FileRef>
 </Workspace>

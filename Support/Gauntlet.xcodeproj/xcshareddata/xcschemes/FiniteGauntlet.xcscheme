@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "73E4FD0A1AFD4E040058C1AF"
-               BuildableName = "FiniteGauntlet.framework"
-               BlueprintName = "FiniteGauntlet"
-               ReferencedContainer = "container:FiniteGauntlet.xcodeproj">
+               BuildableName = "Gauntlet.framework"
+               BlueprintName = "Gauntlet"
+               ReferencedContainer = "container:Gauntlet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "73E4FD151AFD4E040058C1AF"
-               BuildableName = "FiniteGauntletTests.xctest"
-               BlueprintName = "FiniteGauntletTests"
-               ReferencedContainer = "container:FiniteGauntlet.xcodeproj">
+               BuildableName = "Gauntlet.xctest"
+               BlueprintName = "GauntletTests"
+               ReferencedContainer = "container:Gauntlet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "73E4FD151AFD4E040058C1AF"
-               BuildableName = "FiniteGauntletTests.xctest"
-               BlueprintName = "FiniteGauntletTests"
-               ReferencedContainer = "container:FiniteGauntlet.xcodeproj">
+               BuildableName = "Gauntlet.xctest"
+               BlueprintName = "GauntletTests"
+               ReferencedContainer = "container:Gauntlet.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +57,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "73E4FD0A1AFD4E040058C1AF"
-            BuildableName = "FiniteGauntlet.framework"
-            BlueprintName = "FiniteGauntlet"
-            ReferencedContainer = "container:FiniteGauntlet.xcodeproj">
+            BuildableName = "Gauntlet.framework"
+            BlueprintName = "Gauntlet"
+            ReferencedContainer = "container:Gauntlet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -79,9 +79,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "73E4FD0A1AFD4E040058C1AF"
-            BuildableName = "FiniteGauntlet.framework"
-            BlueprintName = "FiniteGauntlet"
-            ReferencedContainer = "container:FiniteGauntlet.xcodeproj">
+            BuildableName = "Gauntlet.framework"
+            BlueprintName = "Gauntlet"
+            ReferencedContainer = "container:Gauntlet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -97,9 +97,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "73E4FD0A1AFD4E040058C1AF"
-            BuildableName = "FiniteGauntlet.framework"
-            BlueprintName = "FiniteGauntlet"
-            ReferencedContainer = "container:FiniteGauntlet.xcodeproj">
+            BuildableName = "Gauntlet.framework"
+            BlueprintName = "Gauntlet"
+            ReferencedContainer = "container:Gauntlet.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

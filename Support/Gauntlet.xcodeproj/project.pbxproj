@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7355FC4E1C4C86FB001C5E36 /* Gauntlet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7355FC4D1C4C86FB001C5E36 /* Gauntlet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73584FB11B079CD800B3CA74 /* TransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73584FB01B079CD800B3CA74 /* TransitionTests.swift */; };
 		73E3D0101C4C122600DFA67A /* CaptureSelfTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */; };
-		73E4FD111AFD4E040058C1AF /* FiniteGauntlet.h in Headers */ = {isa = PBXBuildFile; fileRef = 73E4FD101AFD4E040058C1AF /* FiniteGauntlet.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		73E4FD171AFD4E040058C1AF /* FiniteGauntlet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73E4FD0B1AFD4E040058C1AF /* FiniteGauntlet.framework */; };
+		73E4FD171AFD4E040058C1AF /* Gauntlet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73E4FD0B1AFD4E040058C1AF /* Gauntlet.framework */; };
 		73E4FD281AFD4E1B0058C1AF /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */; };
 		73E4FD2C1AFD51C00058C1AF /* StateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2B1AFD51C00058C1AF /* StateType.swift */; };
 		73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */; };
@@ -27,13 +27,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7355FC4D1C4C86FB001C5E36 /* Gauntlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Gauntlet.h; sourceTree = "<group>"; };
 		73584FB01B079CD800B3CA74 /* TransitionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitionTests.swift; sourceTree = "<group>"; };
+		7367BD6F1C4C858500CB17D7 /* Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
 		73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureSelfTests.swift; sourceTree = "<group>"; };
-		73E4FD0B1AFD4E040058C1AF /* FiniteGauntlet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FiniteGauntlet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		73E4FD0B1AFD4E040058C1AF /* Gauntlet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Gauntlet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		73E4FD0F1AFD4E040058C1AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		73E4FD101AFD4E040058C1AF /* FiniteGauntlet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FiniteGauntlet.h; sourceTree = "<group>"; };
-		73E4FD161AFD4E040058C1AF /* FiniteGauntletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FiniteGauntletTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		73E4FD1C1AFD4E040058C1AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		73E4FD161AFD4E040058C1AF /* GauntletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GauntletTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		73E4FD2B1AFD51C00058C1AF /* StateType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateType.swift; sourceTree = "<group>"; };
 		73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialTests.swift; sourceTree = "<group>"; };
@@ -51,18 +51,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				73E4FD171AFD4E040058C1AF /* FiniteGauntlet.framework in Frameworks */,
+				73E4FD171AFD4E040058C1AF /* Gauntlet.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7367BD6E1C4C851900CB17D7 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				7355FC4D1C4C86FB001C5E36 /* Gauntlet.h */,
+				7367BD6F1C4C858500CB17D7 /* Tests-Info.plist */,
+				73E4FD0F1AFD4E040058C1AF /* Info.plist */,
+			);
+			name = Support;
+			sourceTree = "<group>";
+		};
 		73E4FD011AFD4E040058C1AF = {
 			isa = PBXGroup;
 			children = (
-				73E4FD0D1AFD4E040058C1AF /* FiniteGauntlet */,
-				73E4FD1A1AFD4E040058C1AF /* FiniteGauntletTests */,
+				73E4FD0D1AFD4E040058C1AF /* Sources */,
+				73E4FD1A1AFD4E040058C1AF /* Tests */,
+				7367BD6E1C4C851900CB17D7 /* Support */,
 				73E4FD0C1AFD4E040058C1AF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,48 +81,31 @@
 		73E4FD0C1AFD4E040058C1AF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				73E4FD0B1AFD4E040058C1AF /* FiniteGauntlet.framework */,
-				73E4FD161AFD4E040058C1AF /* FiniteGauntletTests.xctest */,
+				73E4FD0B1AFD4E040058C1AF /* Gauntlet.framework */,
+				73E4FD161AFD4E040058C1AF /* GauntletTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		73E4FD0D1AFD4E040058C1AF /* FiniteGauntlet */ = {
+		73E4FD0D1AFD4E040058C1AF /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				73E4FD101AFD4E040058C1AF /* FiniteGauntlet.h */,
 				73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */,
 				73E4FD2B1AFD51C00058C1AF /* StateType.swift */,
-				73E4FD0E1AFD4E040058C1AF /* Supporting Files */,
 			);
-			path = FiniteGauntlet;
+			name = Sources;
+			path = ../Sources;
 			sourceTree = "<group>";
 		};
-		73E4FD0E1AFD4E040058C1AF /* Supporting Files */ = {
+		73E4FD1A1AFD4E040058C1AF /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				73E4FD0F1AFD4E040058C1AF /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		73E4FD1A1AFD4E040058C1AF /* FiniteGauntletTests */ = {
-			isa = PBXGroup;
-			children = (
-				73E4FD1B1AFD4E040058C1AF /* Supporting Files */,
 				73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */,
 				73584FB01B079CD800B3CA74 /* TransitionTests.swift */,
 				73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */,
 			);
-			path = FiniteGauntletTests;
-			sourceTree = "<group>";
-		};
-		73E4FD1B1AFD4E040058C1AF /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				73E4FD1C1AFD4E040058C1AF /* Info.plist */,
-			);
-			name = "Supporting Files";
+			name = Tests;
+			path = ../Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -121,16 +115,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				73E4FD111AFD4E040058C1AF /* FiniteGauntlet.h in Headers */,
+				7355FC4E1C4C86FB001C5E36 /* Gauntlet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		73E4FD0A1AFD4E040058C1AF /* FiniteGauntlet */ = {
+		73E4FD0A1AFD4E040058C1AF /* Gauntlet */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 73E4FD211AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "FiniteGauntlet" */;
+			buildConfigurationList = 73E4FD211AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "Gauntlet" */;
 			buildPhases = (
 				73E4FD061AFD4E040058C1AF /* Sources */,
 				73E4FD071AFD4E040058C1AF /* Frameworks */,
@@ -141,14 +135,14 @@
 			);
 			dependencies = (
 			);
-			name = FiniteGauntlet;
+			name = Gauntlet;
 			productName = FiniteGauntlet;
-			productReference = 73E4FD0B1AFD4E040058C1AF /* FiniteGauntlet.framework */;
+			productReference = 73E4FD0B1AFD4E040058C1AF /* Gauntlet.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		73E4FD151AFD4E040058C1AF /* FiniteGauntletTests */ = {
+		73E4FD151AFD4E040058C1AF /* GauntletTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 73E4FD241AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "FiniteGauntletTests" */;
+			buildConfigurationList = 73E4FD241AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "GauntletTests" */;
 			buildPhases = (
 				73E4FD121AFD4E040058C1AF /* Sources */,
 				73E4FD131AFD4E040058C1AF /* Frameworks */,
@@ -159,9 +153,9 @@
 			dependencies = (
 				73E4FD191AFD4E040058C1AF /* PBXTargetDependency */,
 			);
-			name = FiniteGauntletTests;
+			name = GauntletTests;
 			productName = FiniteGauntletTests;
-			productReference = 73E4FD161AFD4E040058C1AF /* FiniteGauntletTests.xctest */;
+			productReference = 73E4FD161AFD4E040058C1AF /* GauntletTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -182,7 +176,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 73E4FD051AFD4E040058C1AF /* Build configuration list for PBXProject "FiniteGauntlet" */;
+			buildConfigurationList = 73E4FD051AFD4E040058C1AF /* Build configuration list for PBXProject "Gauntlet" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -194,8 +188,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				73E4FD0A1AFD4E040058C1AF /* FiniteGauntlet */,
-				73E4FD151AFD4E040058C1AF /* FiniteGauntletTests */,
+				73E4FD0A1AFD4E040058C1AF /* Gauntlet */,
+				73E4FD151AFD4E040058C1AF /* GauntletTests */,
 			);
 		};
 /* End PBXProject section */
@@ -242,7 +236,7 @@
 /* Begin PBXTargetDependency section */
 		73E4FD191AFD4E040058C1AF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 73E4FD0A1AFD4E040058C1AF /* FiniteGauntlet */;
+			target = 73E4FD0A1AFD4E040058C1AF /* Gauntlet */;
 			targetProxy = 73E4FD181AFD4E040058C1AF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -346,11 +340,11 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = FiniteGauntlet/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Gauntlet;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -364,11 +358,11 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = FiniteGauntlet/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Gauntlet;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -381,10 +375,10 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = FiniteGauntletTests/Info.plist;
+				INFOPLIST_FILE = "Tests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = GauntletTests;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -393,17 +387,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				INFOPLIST_FILE = FiniteGauntletTests/Info.plist;
+				INFOPLIST_FILE = "Tests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = GauntletTests;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		73E4FD051AFD4E040058C1AF /* Build configuration list for PBXProject "FiniteGauntlet" */ = {
+		73E4FD051AFD4E040058C1AF /* Build configuration list for PBXProject "Gauntlet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				73E4FD1F1AFD4E040058C1AF /* Debug */,
@@ -412,7 +406,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		73E4FD211AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "FiniteGauntlet" */ = {
+		73E4FD211AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "Gauntlet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				73E4FD221AFD4E040058C1AF /* Debug */,
@@ -421,7 +415,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		73E4FD241AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "FiniteGauntletTests" */ = {
+		73E4FD241AFD4E040058C1AF /* Build configuration list for PBXNativeTarget "GauntletTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				73E4FD251AFD4E040058C1AF /* Debug */,

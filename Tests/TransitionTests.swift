@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-import FiniteGauntlet
+import Gauntlet
 
 
 class TransitionTests : XCTestCase{
