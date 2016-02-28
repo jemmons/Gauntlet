@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "73E4FD151AFD4E040058C1AF"
-               BuildableName = "Gauntlet.xctest"
+               BuildableName = "GauntletTests.xctest"
                BlueprintName = "GauntletTests"
                ReferencedContainer = "container:Gauntlet.xcodeproj">
             </BuildableReference>
@@ -47,7 +47,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "73E4FD151AFD4E040058C1AF"
-               BuildableName = "Gauntlet.xctest"
+               BuildableName = "GauntletTests.xctest"
                BlueprintName = "GauntletTests"
                ReferencedContainer = "container:Gauntlet.xcodeproj">
             </BuildableReference>
