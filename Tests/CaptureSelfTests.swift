@@ -79,7 +79,7 @@ class CaptureSelfTests: XCTestCase {
          }
        }
    
-   But for now that leaks.
+   But for now it leaks.
    */
   func testDirectAssignment() {
     var subject = Optional(Foo(ref: ref))
