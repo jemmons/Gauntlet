@@ -179,4 +179,21 @@ class TransitionTests : XCTestCase{
     
     waitForExpectationsWithTimeout(2, handler: nil)
   }
+  
+  
+  func testNilSelf() {
+    var subject:StateMachine? = StateMachine(initialState: State.Ready)
+    subject!.transitionHandler = { from, to in
+      XCTFail("Should never be called.")
+    }
+    subject!.queueState(.Working)
+    subject = nil
+    
+    let expectTimeWasted = expectationWithDescription("Should waste time.")
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue()) {
+      expectTimeWasted.fulfill()
+    }
+    //This just pumps the event loop.
+    waitForExpectationsWithTimeout(1.5, handler: nil)
+  }
 }
