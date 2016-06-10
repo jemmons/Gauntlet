@@ -15,7 +15,7 @@ func ==(lhs: TransitionTests.State, rhs: TransitionTests.State) -> Bool {
 class TransitionTests : XCTestCase{
   enum State: StateType, Equatable {
     case Ready, Working, Success(String), Failure(NSError)
-    func shouldTransitionFrom(from: State, to: State) -> Bool {
+    static func shouldTransition(from: State, to: State) -> Bool {
       switch (from, to) {
       case
       (.Ready, .Ready),
@@ -47,7 +47,12 @@ class TransitionTests : XCTestCase{
   
   func testValidTransition(){
     let expectWorking = expectationWithDescription("Completed Transition")
-
+    expectationForNotification("GauntletWillTransitionNotification", object: machine) {
+      return ($0.userInfo!["fromString"] as! String).containsString("Ready") && ($0.userInfo!["toString"] as! String).containsString("Working")
+    }
+    expectationForNotification("GauntletDidTransitionNotification", object: machine) {
+      return ($0.userInfo!["fromString"] as! String).containsString("Ready") && ($0.userInfo!["toString"] as! String).containsString("Working")
+    }
     machine.transitionHandler = { from, to in
       if case (.Ready, .Working) = (from, to) {
         expectWorking.fulfill()

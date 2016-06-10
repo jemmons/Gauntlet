@@ -1,6 +1,20 @@
 import Foundation
 
-
+/// On Testing:
+///
+/// Often when testing, we'll want to assert that a state machine has made some transition. Because state machines should be private implementation details of their classes, and becasue state change happens asynchronously (or, at least, in the next cycle of the runloop), this can be difficult without sprinkling completion handlers throughout our code.
+///
+/// Instead, we can define the environment variable `GAUNTLET_POST_TEST_NOTIFICATIONS` in our testing scheme (any non-nil value will do), and subscribe to one or more of the following notifications:
+///
+/// * `GauntletWillTransitionNotification`
+/// * `GauntletDidTransitionNotification`
+///
+/// Both will post a `userInfo` with the following values:
+///
+/// * `fromString`: String value of the `StateType` the `StateMachine` did/will transition from.
+/// * `fromBox`: Boxed version of the `StateType` the `StateMachine` did/will transition from. Use the `value` property to unbox the `StateType`.
+/// * `toString`: String value of the `StateType` the `StateMachine` did/will transition to.
+/// * `toBox`: Boxed version of the `StateType` the `StateMachine` did/will transitioning to. Use the `value` property to unbox the `StateType`.
 public class StateMachine<T: StateType> {
   /// The current state of the state machine. Read-only.
   public private(set) var state: T
@@ -34,10 +48,33 @@ public class StateMachine<T: StateType> {
   
   
   private func delegateTransitionTo(to: T) {
-    if state.shouldTransitionFrom(state, to:to){
-      let from = state //If «T» is a mutable ref type, this will do Bad Things.
+    if T.shouldTransition(state, to: to) {
+      let from = state //If «T» is a mutable ref type, this can do Bad Things.
       state = to
+      postNotification(withName: "GauntletWillTransitionNotification", userInfo: makeUserInfo(withFrom: from, to: to))
       transitionHandler(from, to)
+      postNotification(withName: "GauntletDidTransitionNotification", userInfo: makeUserInfo(withFrom: from, to: to))
     }
+  }
+}
+
+
+
+private extension StateMachine {
+  func postNotification(withName name:String, userInfo: [NSObject: AnyObject]) {
+    guard testingEnvironmentDefined else {
+      return
+    }
+    NSNotificationCenter.defaultCenter().postNotificationName(name, object: self, userInfo: userInfo)
+  }
+  
+  
+  private func makeUserInfo(withFrom from: T, to: T) -> [NSObject: AnyObject] {
+    return ["fromString": String(from), "fromBox": StateBox(value:from), "toString": String(to), "toBox": StateBox(value:to)]
+  }
+
+  
+  private var testingEnvironmentDefined: Bool {
+    return NSProcessInfo.processInfo().environment["GAUNTLET_POST_TEST_NOTIFICATIONS"] != nil
   }
 }
