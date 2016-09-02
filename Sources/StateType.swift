@@ -21,7 +21,7 @@ public protocol StateType {
 
 /// A type to box non-class `StateType`s in classes for better ObjC portability. Curretnly this is only used for test notifications (see: "On Testing" in `StateMachine.swift`).
 public class StateBox<T:StateType> {
-  let value: T
+  public let value: T
   init(value: T) {
     self.value = value
   }
