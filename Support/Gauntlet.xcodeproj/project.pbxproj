@@ -170,9 +170,11 @@
 				TargetAttributes = {
 					73E4FD0A1AFD4E040058C1AF = {
 						CreatedOnToolsVersion = 6.3.1;
+						LastSwiftMigration = 0810;
 					};
 					73E4FD151AFD4E040058C1AF = {
 						CreatedOnToolsVersion = 6.3.1;
+						LastSwiftMigration = 0810;
 					};
 				};
 			};
@@ -347,6 +349,7 @@
 				PRODUCT_NAME = Gauntlet;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -364,6 +367,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Gauntlet;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
@@ -380,6 +384,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = GauntletTests;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -391,6 +396,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = GauntletTests;
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
