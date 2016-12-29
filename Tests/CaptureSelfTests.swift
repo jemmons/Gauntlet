@@ -41,9 +41,7 @@ class CaptureSelfTests: XCTestCase {
   
 
   func testDeinitWorks() {
-    var subject = Optional(Foo(ref: ref))
-    print(subject) //just to avoid "subject not used" warning.
-    subject = nil
+    let _ = Foo(ref: ref)
     XCTAssert(ref.success)
   }
   

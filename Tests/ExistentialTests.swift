@@ -5,19 +5,19 @@ import Gauntlet
 
 class ExistentialTests : XCTestCase{
   enum State: StateType{
-    case Ready, Working, Success(String), Failure(NSError)
+    case ready, working, success(String), failure(NSError)
     static func shouldTransition(from: State, to: State) -> Bool {
       return true
     }
   }
   
   
-  var machine = StateMachine(initialState: State.Ready)
+  var machine = StateMachine(initialState: State.ready)
   
   
   func testInitialState(){
     switch machine.state{
-    case .Ready:
+    case .ready:
       XCTAssert(true)
     default:
       XCTFail("Not Ready")
