@@ -32,7 +32,7 @@ class TransitionTests : XCTestCase{
   
   func testTransitionDelay(){
     let expectWorking = expectation(description: "Completed Transition")
-    machine.transitionHandler = { from, to in
+    machine.delegates.didTransition = { from, to in
       if case (.ready, .working) = (from, to) {
         expectWorking.fulfill()
       }
@@ -53,7 +53,7 @@ class TransitionTests : XCTestCase{
     expectation(forNotification: GauntletNotification.didTransition.rawValue, object: machine) {
       return (($0 as NSNotification).userInfo!["fromString"] as! String).contains("ready") && (($0 as NSNotification).userInfo!["toString"] as! String).contains("working")
     }
-    machine.transitionHandler = { from, to in
+    machine.delegates.didTransition = { from, to in
       if case (.ready, .working) = (from, to) {
         expectWorking.fulfill()
       }
@@ -70,7 +70,7 @@ class TransitionTests : XCTestCase{
     let expectWorking = expectation(description: "Completed Working")
     let expectReady = expectation(description: "Completed Ready")
 
-    machine.transitionHandler = { _, to in
+    machine.delegates.didTransition = { _, to in
       switch to {
       case .working:
         expectWorking.fulfill()
@@ -94,7 +94,7 @@ class TransitionTests : XCTestCase{
     var didTransition = false
     let expectQueued = expectation(description: "Queued Expectation")
     
-    machine.transitionHandler = { from, to in
+    machine.delegates.didTransition = { from, to in
       didTransition = true
     }
     //This will put the state-changing operation on the main queue.
@@ -111,7 +111,7 @@ class TransitionTests : XCTestCase{
   func testInvalidTransition(){
     let expectQueued = expectation(description: "Queued Expectation")
 
-    machine.transitionHandler = { from, to in
+    machine.delegates.didTransition = { from, to in
       XCTFail("Handler for invalid transition should not have been called.")
     }
     machine.queue(.success("foo"))
@@ -126,7 +126,7 @@ class TransitionTests : XCTestCase{
   func testValidDoubleTransition(){
     let expectDoubleReady = expectation(description: "Transition Complete")
 
-    machine.transitionHandler = { from, to in
+    machine.delegates.didTransition = { from, to in
       if case (.ready, .ready) = (from, to) {
         expectDoubleReady.fulfill()
       }
@@ -143,7 +143,7 @@ class TransitionTests : XCTestCase{
     let expectWorking = expectation(description: "Transition Complete")
     let expectQueued = expectation(description: "Queued Expectation")
     
-    machine.transitionHandler = { from, to in
+    machine.delegates.didTransition = { from, to in
       switch (from, to) {
       case (.ready, .working):
         expectWorking.fulfill()
@@ -166,7 +166,7 @@ class TransitionTests : XCTestCase{
     let expectWorking = expectation(description: "Transition Complete")
     var inWorking = false
     
-    machine.transitionHandler = { _, to in
+    machine.delegates.didTransition = { _, to in
       switch to {
       case .ready:
         XCTAssertFalse(inWorking, "no other handler should be on the stack")
@@ -188,7 +188,7 @@ class TransitionTests : XCTestCase{
   
   func testNilSelf() {
     var subject:StateMachine? = StateMachine(initialState: State.ready)
-    subject!.transitionHandler = { from, to in
+    subject!.delegates.didTransition = { from, to in
       XCTFail("Should never be called.")
     }
     subject!.queue(.working)
