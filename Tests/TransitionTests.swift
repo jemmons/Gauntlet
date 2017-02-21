@@ -15,8 +15,8 @@ func ==(lhs: TransitionTests.State, rhs: TransitionTests.State) -> Bool {
 class TransitionTests : XCTestCase{
   enum State: StateType, Equatable {
     case ready, working, success(String), failure(NSError)
-    static func shouldTransition(from: State, to: State) -> Bool {
-      switch (from, to) {
+    func shouldTransition(to: State) -> Bool {
+      switch (self, to) {
       case
       (.ready, .ready),
       (.ready, .working),

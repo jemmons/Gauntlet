@@ -6,7 +6,7 @@ import Gauntlet
 class ExistentialTests : XCTestCase{
   enum State: StateType{
     case ready, working, success(String), failure(NSError)
-    static func shouldTransition(from: State, to: State) -> Bool {
+    func shouldTransition(to: State) -> Bool {
       return true
     }
   }

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Public Interface  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="Public Interface  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">Gauntlet Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/jemmons/Gauntlet"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">Gauntlet Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Public Interface  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Public Interface.html">Public Interface</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/StateType.html">StateType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/StateMachine.html">StateMachine</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/StateTransitionDelegates.html">StateTransitionDelegates</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other Classes.html">Other Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/StateBox.html">StateBox</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other Enums.html">Other Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/GauntletNotification.html">GauntletNotification</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Public Interface</h1>
+            
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:P8Gauntlet9StateType"></a>
+                    <a name="//apple_ref/swift/Protocol/StateType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:P8Gauntlet9StateType">StateType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Describes the primary unit of state in a <code><a href="Classes/StateMachine.html">StateMachine</a></code>. In theory, this could be any type capable of calculating whether a transition between two instances of itself is legal. In practice, it is always an <code>enum</code>:</p>
+
+<pre class="highlight plaintext"><code>enum MyState: StateType {
+  case Red, Yellow, Green 
+  func shouldTransition(to: MyState) -&gt; Bool {
+    switch (self, to) {
+    case (.Red, Green), (.Green, .Yellow), (.Yellow, Red):
+      return true
+    default:
+      return false
+    }
+  }
+}
+</code></pre>
+
+                        <a href="Protocols/StateType.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">StateType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C8Gauntlet12StateMachine"></a>
+                    <a name="//apple_ref/swift/Class/StateMachine" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C8Gauntlet12StateMachine">StateMachine</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>On Testing:</p>
+
+<p>Often when testing, we&rsquo;ll want to assert that a state machine has made some transition. Because state machines should be private implementation details of their classes, and becasue state change happens asynchronously (or, at least, in the next cycle of the runloop), this can be difficult without sprinkling completion handlers throughout our code.</p>
+
+<p>Instead, we can define the environment variable <code>GAUNTLET_POST_TEST_NOTIFICATIONS</code> in our testing scheme (any non-nil value will do), and subscribe to one or more of the following notification names:</p>
+
+<ul>
+<li><code><a href="Enums/GauntletNotification.html#/s:ZvO8Gauntlet20GauntletNotification14willTransitionVCSo14NSNotification4Name">GauntletNotification.willTransition</a></code></li>
+<li><code><a href="Enums/GauntletNotification.html#/s:ZvO8Gauntlet20GauntletNotification13didTransitionVCSo14NSNotification4Name">GauntletNotification.didTransition</a></code></li>
+</ul>
+
+<p>Both will post a <code>userInfo</code> with the following values:</p>
+
+<ul>
+<li><code>fromString</code>: String value of the <code><a href="Protocols/StateType.html">StateType</a></code> the <code>StateMachine</code> did/will transition from.</li>
+<li><code>fromBox</code>: Boxed version of the <code><a href="Protocols/StateType.html">StateType</a></code> the <code>StateMachine</code> did/will transition from. Use the <code>value</code> property to unbox the <code><a href="Protocols/StateType.html">StateType</a></code>.</li>
+<li><code>toString</code>: String value of the <code><a href="Protocols/StateType.html">StateType</a></code> the <code>StateMachine</code> did/will transition to.</li>
+<li><code>toBox</code>: Boxed version of the <code><a href="Protocols/StateType.html">StateType</a></code> the <code>StateMachine</code> did/will transitioning to. Use the <code>value</code> property to unbox the <code><a href="Protocols/StateType.html">StateType</a></code>.</li>
+</ul>
+
+                        <a href="Classes/StateMachine.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">StateMachine</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt"><a href="Protocols/StateType.html">StateType</a></span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:V8Gauntlet24StateTransitionDelegates"></a>
+                    <a name="//apple_ref/swift/Struct/StateTransitionDelegates" class="dashAnchor"></a>
+                    <a class="token" href="#/s:V8Gauntlet24StateTransitionDelegates">StateTransitionDelegates</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Delegate tasks of <code><a href="Classes/StateMachine.html">StateMachine</a></code>. Consumers can assign implementations to respond to lifecycle events.</p>
+
+                        <a href="Structs/StateTransitionDelegates.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">StateTransitionDelegates</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt"><a href="Protocols/StateType.html">StateType</a></span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2017-02-21)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
