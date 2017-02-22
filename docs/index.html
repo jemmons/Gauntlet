@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Gauntlet  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="Gauntlet  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">Gauntlet Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/jemmons/Gauntlet"><img src="img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right"><a href="dash-feed://https%3A%2F%2Fjemmons%2Egithub%2Eio%2FGauntlet%2Fdocsets%2FGauntlet%2Exml"><img src="img/dash.png"/>Install in Dash</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">Gauntlet Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Gauntlet  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Public Interface.html">Public Interface</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/StateType.html">StateType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/StateMachine.html">StateMachine</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Structs/StateTransitionDelegates.html">StateTransitionDelegates</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Constants.html">Constants</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/GauntletNotification.html">GauntletNotification</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Other Classes.html">Other Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/StateBox.html">StateBox</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <a href='#gauntlet' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='gauntlet'>Gauntlet</h1>
+
+<p><a href="https://github.com/Carthage/Carthage"><img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage compatible"></a></p>
+
+<p>Gauntlet is a swift-friendly state machine focusing on simple configuration and light weight objects. It was originally inspired by <a href="http://www.figure.ink/blog/2015/1/31/swift-state-machines-part-1">a series of blog posts over on figure.ink</a>, but has evolved substantially since then.</p>
+<a href='#simple-configuration' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='simple-configuration'>Simple Configuration</h2>
+
+<p>Rather than requiring complicated graphs and configuration XML, state in Gauntlet is modeled by a single type (conforming to <code>StateType</code>) that is capable of determining whether transitions to other instances of itself are allowed. </p>
+
+<p>This not only simplifies configuration substantially, it maps very nicely onto swift&rsquo;s concept of an <code>enum</code> and can be trivially implemented with a single <code>switch</code>:   </p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">TrafficLight</span><span class="p">:</span> <span class="kt">StateType</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="n">red</span><span class="p">,</span> <span class="n">yellow</span><span class="p">,</span> <span class="n">green</span>
+
+  <span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt">TrafficLight</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="o">.</span><span class="n">green</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="o">.</span><span class="n">yellow</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="o">.</span><span class="n">red</span><span class="p">):</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="k">default</span><span class="p">:</span>
+      <span class="k">return</span> <span class="kc">false</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<a href='#light-weight-objects' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='light-weight-objects'>Light Weight Objects</h2>
+
+<p>Gauntlet doesn&rsquo;t require you subclass your objects from some abstract root machine or manage class hierarchies of behavior. Instead, a simple light weight <code>StateMachine</code> class is available for you to compose into any of your existing types. </p>
+
+<p>A <code>StateMachine</code> gets created with a <code>StateType</code> and an initial state. Queueing up state changes is a simple method call and a delegate handler can be assigned to respond to transitions. Once again, swift&rsquo;s <code>switch</code> is a good fit here:</p>
+<pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">MyClass</span> <span class="p">{</span>
+  <span class="k">let</span> <span class="nv">machine</span><span class="p">:</span> <span class="kt">StateMachine</span><span class="o">&lt;</span><span class="kt">TrafficLight</span><span class="o">&gt;</span>
+
+  <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="o">.</span><span class="n">red</span><span class="p">)</span>
+    <span class="n">machine</span><span class="o">.</span><span class="n">delegates</span><span class="o">.</span><span class="n">didTransition</span> <span class="o">=</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+      <span class="k">switch</span> <span class="n">to</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="o">.</span><span class="nv">red</span><span class="p">:</span>
+        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">stop</span><span class="p">()</span>
+      <span class="k">case</span> <span class="o">.</span><span class="nv">yellow</span><span class="p">:</span>
+        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">caution</span><span class="p">()</span>
+      <span class="k">case</span> <span class="o">.</span><span class="nv">green</span><span class="p">:</span>
+        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">go</span><span class="p">()</span> 
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="kd">func</span> <span class="nf">doThing</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="n">green</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<a href='#associating-values' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='associating-values'>Associating Values</h2>
+
+<p>Conforming to <code>StateType</code> with an <code>enum</code> allows us to associate values with a state:</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">Connection</span><span class="p">:</span> <span class="kt">StateType</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="nf">fetch</span><span class="p">(</span><span class="kt">URLSessionTask</span><span class="p">),</span> <span class="nf">success</span><span class="p">([</span><span class="kt">AnyHashable</span><span class="p">:</span> <span class="kt">Any</span><span class="p">]),</span> <span class="nf">failure</span><span class="p">(</span><span class="kt">Error</span><span class="p">),</span> <span class="n">cancel</span>
+
+  <span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt">Connection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="n">fetching</span><span class="p">,</span> <span class="o">.</span><span class="n">success</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="n">fetching</span><span class="p">,</span> <span class="o">.</span><span class="n">failure</span><span class="p">),</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">.</span><span class="n">cancel</span><span class="p">):</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="k">default</span><span class="p">:</span>
+      <span class="k">return</span> <span class="kc">false</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Values get associated when a state change is queued:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">connect</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">let</span> <span class="nv">task</span> <span class="o">=</span> <span class="nf">makeTask</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="n">myURL</span><span class="p">)</span> <span class="p">{</span> <span class="n">json</span><span class="p">,</span> <span class="n">error</span> <span class="k">in</span>
+    <span class="k">guard</span> <span class="n">error</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="nf">faulure</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+      <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">json</span><span class="p">))</span>
+  <span class="p">}</span>
+
+  <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="nf">fetching</span><span class="p">(</span><span class="n">task</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>…And can be pulled out again when handling transitions:</p>
+<pre class="highlight swift"><code><span class="n">machine</span><span class="o">.</span><span class="n">delegates</span><span class="o">.</span><span class="n">didTransition</span> <span class="o">=</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="k">switch</span> <span class="p">(</span><span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">json</span><span class="p">)):</span>
+    <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">processJSON</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
+  <span class="k">case</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">.</span><span class="nf">failure</span><span class="p">(</span><span class="k">let</span> <span class="nv">error</span><span class="p">)):</span>
+    <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">alert</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+  <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="nf">fetching</span><span class="p">(</span><span class="k">let</span> <span class="nv">task</span><span class="p">),</span> <span class="o">.</span><span class="n">cancel</span><span class="p">):</span>
+    <span class="n">task</span><span class="o">.</span><span class="nf">cancel</span><span class="p">()</span>
+  <span class="k">default</span><span class="p">:</span>
+    <span class="k">break</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<a href='#api' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='api'>API</h2>
+
+<p>Full API documentation <a href="https://jemmons.github.io/Gauntlet/Protocols/StateType.html">can be found here</a>.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2017-02-22)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
