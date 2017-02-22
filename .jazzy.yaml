@@ -2,14 +2,15 @@ clean: true
 author: Joshua Emmons
 author_url: https://figure.ink
 github_url: https://github.com/jemmons/Gauntlet
+root_url: https://jemmons.github.io/Gauntlet/
 module: Gauntlet
-xcodebuild_arguments: 
-  - '-project'
-  - 'Support/Gauntlet.xcodeproj'
-docset_path: docset  
+
 custom_categories:
   - name: Public Interface
     children:
     - StateType
     - StateMachine
     - StateTransitionDelegates
+  - name: Constants
+    children:
+    - GauntletNotification
