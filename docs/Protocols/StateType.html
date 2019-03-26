@@ -39,7 +39,7 @@
                 <a href="../Classes/StateMachine.html">StateMachine</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Structs/StateTransitionDelegates.html">StateTransitionDelegates</a>
+                <a href="../Classes/StateMachine/StateTransitionDelegates.html">– StateTransitionDelegates</a>
               </li>
             </ul>
           </li>
@@ -67,23 +67,22 @@
             <h1>StateType</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">StateType</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">StateType</span></code></pre>
 
                 </div>
               </div>
             <p>Describes the primary unit of state in a <code><a href="../Classes/StateMachine.html">StateMachine</a></code>. In theory, this could be any type capable of calculating whether a transition between two instances of itself is legal. In practice, it is always an <code>enum</code>:</p>
-
-<pre class="highlight plaintext"><code>enum MyState: StateType {
-  case Red, Yellow, Green 
-  func shouldTransition(to: MyState) -&gt; Bool {
-    switch (self, to) {
-    case (.Red, Green), (.Green, .Yellow), (.Yellow, Red):
-      return true
-    default:
-      return false
-    }
-  }
-}
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">MyState</span><span class="p">:</span> <span class="kt">StateType</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="kt">Red</span><span class="p">,</span> <span class="kt">Yellow</span><span class="p">,</span> <span class="kt">Green</span> 
+  <span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt">MyState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="kt">Red</span><span class="p">,</span> <span class="kt">Green</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="kt">Green</span><span class="p">,</span> <span class="o">.</span><span class="kt">Yellow</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="kt">Yellow</span><span class="p">,</span> <span class="kt">Red</span><span class="p">):</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="k">default</span><span class="p">:</span>
+      <span class="k">return</span> <span class="kc">false</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 
           </section>
@@ -93,9 +92,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP8Gauntlet9StateType16shouldTransitionFT2tox_Sb"></a>
+                    <a name="/s:8Gauntlet9StateTypeP16shouldTransition2toSbx_tF"></a>
                     <a name="//apple_ref/swift/Method/shouldTransition(to:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP8Gauntlet9StateType16shouldTransitionFT2tox_Sb">shouldTransition(to:)</a>
+                    <a class="token" href="#/s:8Gauntlet9StateTypeP16shouldTransition2toSbx_tF">shouldTransition(to:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -110,7 +109,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="k">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="k">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
 
                         </div>
                       </div>
@@ -127,7 +126,6 @@
                               <td>
                                 <div>
                                   <p>The state to potentially transition to.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -137,7 +135,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p><code>true</code> if it’s legal to trasition from <code>self</code> to <code>to</code>. Otherwise, <code>false</code>.</p>
-
                       </div>
                     </section>
                   </div>
@@ -147,8 +144,8 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2017-02-22)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-03-20)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>
