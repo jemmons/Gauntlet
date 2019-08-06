@@ -5,12 +5,12 @@
 Gauntlet is a swift-friendly [state machine](https://en.wikipedia.org/wiki/Finite-state_machine) focusing on simple configuration and light weight objects. It was originally inspired by [a series of blog posts over on figure.ink](http://www.figure.ink/blog/2015/1/31/swift-state-machines-part-1), but has evolved substantially since then.
 
 ## Simple Configuration
-Rather than requiring complicated graphs and configuration XML, state in Gauntlet is modeled by a single type (conforming to `StateType`) that is capable of determining whether transitions to other instances of itself are allowed. 
+Rather than requiring complicated graphs and configuration XML, state in Gauntlet is modeled by a single type (conforming to `Transitionable`) that is capable of determining whether transitions to other instances of itself are allowed. 
 
 This not only simplifies configuration substantially, it maps very nicely onto swift's concept of an `enum` and can be trivially implemented with a single `switch`:   
 
 ```swift
-enum TrafficLight: StateType {
+enum TrafficLight: Transitionable {
   case red, yellow, green
 
   func shouldTransition(to: TrafficLight) -> Bool {
@@ -27,7 +27,7 @@ enum TrafficLight: StateType {
 ## Light Weight Objects
 Gauntlet doesn't require you subclass your objects from some abstract root machine or manage class hierarchies of behavior. Instead, a simple light weight `StateMachine` class is available for you to compose into any of your existing types. 
 
-A `StateMachine` gets created with a `StateType` and an initial state. Queueing up state changes is a simple method call and a delegate handler can be assigned to respond to transitions. Once again, swift's `switch` is a good fit here:
+A `StateMachine` gets created with a `Transitionable` type and an initial state. Queueing up state changes is a simple method call and a delegate handler can be assigned to respond to transitions. Once again, swift's `switch` is a good fit here:
 
 ```swift
 class MyClass {
@@ -55,10 +55,10 @@ class MyClass {
 
 ## Associating Values
 
-Conforming to `StateType` with an `enum` allows us to associate values with a state:
+Conforming to `Transitionable` with an `enum` allows us to associate values with a state:
 
 ```swift
-enum Connection: StateType {
+enum Connection: Transitionable {
   case fetch(URLSessionTask), success([AnyHashable: Any]), failure(Error), cancel
   
   func shouldTransition(to: Connection) -> Bool {

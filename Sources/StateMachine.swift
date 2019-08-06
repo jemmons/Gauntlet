@@ -17,7 +17,7 @@ import Foundation
  * `from`: The `StateType` the `StateMachine` did/will transition from.
  * `to`: The `StateType` the `StateMachine` did/will transition to.
  */
-public class StateMachine<T: StateType> {
+public class StateMachine<State> where State: Transitionable {
   /**
    Delegate tasks of `StateMachine`. Consumers can assign implementations to respond to lifecycle events.
    */
@@ -27,7 +27,7 @@ public class StateMachine<T: StateType> {
      
      * Warning: Like all delegates, there's a high likelihood the delegatee owns the delegator and retain cycles are a danger. If the closure references the delegatee (even as `self`), it should be declared `weak` in a capture list. See [String Reference Cycles for Closures](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/AutomaticReferenceCounting.html#//apple_ref/doc/uid/TP40014097-CH20-ID56).
      */
-    public var didTransition: ((_ from: T, _ to: T) -> Void)?
+    public var didTransition: ((_ from: State, _ to: State) -> Void)?
   }
 
   
@@ -40,7 +40,7 @@ public class StateMachine<T: StateType> {
   /**
    The current state of the state machine. Read-only.
    */
-  public private(set) var state: T
+  public private(set) var state: State
 
 
   /**
@@ -48,7 +48,7 @@ public class StateMachine<T: StateType> {
    
    * note: This could very easily also take a(n optional) `didTransition` handler, saving us a common assignment that will almost always take place directly after instantiation. But I'm always forgetting whether `didTransition` is called when setting initial state or not. Keeping the assignment seperate makes the answer obvious.
    */
-  public init(initialState: T) {
+  public init(initialState: State) {
     state = initialState //set the internal value so we don't need a special rule in «shouldTranistionFrom(_,to:)». Also avoids calling «didTransition».
   }
   
@@ -65,14 +65,14 @@ public class StateMachine<T: StateType> {
    machine.state //> State.ready
    ```
    */
-  public func queue(_ state: T) {
+  public func queue(_ state: State) {
     OperationQueue.main.addOperation { [weak self] () -> Void in
       self?.delegateTransition(to: state)
     }
   }
   
   
-  private func delegateTransition(to: T) {
+  private func delegateTransition(to: State) {
     if state.shouldTransition(to: to) {
       let from = state
       state = to
@@ -86,7 +86,7 @@ public class StateMachine<T: StateType> {
 
 
 private extension StateMachine {
-  func postNotification(_ name: Notification.Name, from: T, to: T) {
+  func postNotification(_ name: Notification.Name, from: State, to: State) {
     guard Helper.isTestingEnvironmentDefined else {
       return
     }
@@ -94,7 +94,7 @@ private extension StateMachine {
   }
   
   
-  private func makeUserInfo(from: T, to: T) -> [AnyHashable: Any] {
+  private func makeUserInfo(from: State, to: State) -> [AnyHashable: Any] {
     return ["from": from,
             "to": to]
   }

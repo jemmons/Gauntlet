@@ -4,7 +4,7 @@ import Gauntlet
 
 
 class ExistentialTests : XCTestCase{
-  enum State: StateType{
+  enum State: Transitionable {
     case ready, working, success(String), failure(NSError)
     func shouldTransition(to: State) -> Bool {
       return true

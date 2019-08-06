@@ -5,7 +5,7 @@ import Gauntlet
 
 
 class TransitionTests : XCTestCase{
-  enum State: StateType, Equatable {
+  enum State: Transitionable, Equatable {
     case ready, working, success(String), failure(NSError)
     func shouldTransition(to: State) -> Bool {
       switch (self, to) {
