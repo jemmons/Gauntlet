@@ -25,7 +25,13 @@ public class StateMachine<State> where State: Transitionable {
     /**
      Delegate closure that gets called whenever `StateMachine` successfully transitions from one state to another.
      
-     * Warning: Like all delegates, there's a high likelihood the delegatee owns the delegator and retain cycles are a danger. If the closure references the delegatee (even as `self`), it should be declared `weak` in a capture list. See [String Reference Cycles for Closures](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/AutomaticReferenceCounting.html#//apple_ref/doc/uid/TP40014097-CH20-ID56).
+     - Note:
+       Why assign a closure for delegated functionality instead of the more standard “set a reference to a class that conforms to a delegate protocol”? Because it’s important the states passed to the delegate method have the same type as `State` (relative to the `StateMachine` class).
+     
+       To do this with a protocol is a bit of a mess because it involves associated types. This has gotten better with conditional conformance, but we still have to make it a top-level generic type, and that’s still ugly (it requrires we give a delegate type even if we don’t use one, it can’t infer the type if we don’t add the delegate as an initialization parameter, etc).
+     
+     - Warning:
+       Like all delegates, there's a high likelihood the delegatee owns the delegator and retain cycles are a danger. If the closure references the delegatee (even as `self`), it should be declared `weak` in a capture list. See [String Reference Cycles for Closures](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/AutomaticReferenceCounting.html#//apple_ref/doc/uid/TP40014097-CH20-ID56).
      */
     public var didTransition: ((_ from: State, _ to: State) -> Void)?
   }
