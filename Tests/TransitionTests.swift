@@ -2,14 +2,6 @@ import Foundation
 import XCTest
 import Gauntlet
 
-func ==(lhs: TransitionTests.State, rhs: TransitionTests.State) -> Bool {
-  switch (lhs, rhs){
-  case (.ready, .ready), (.working, .working), (.success, .success), (.failure, .failure):
-    return true
-  default:
-    return false
-  }
-}
 
 
 class TransitionTests : XCTestCase{
