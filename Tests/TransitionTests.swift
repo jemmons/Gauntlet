@@ -47,11 +47,15 @@ class TransitionTests : XCTestCase{
   
   func testValidTransition(){
     let expectWorking = expectation(description: "Completed Transition")
-    expectation(forNotification: GauntletNotification.willTransition, object: machine) {
-      return (($0 as NSNotification).userInfo!["fromString"] as! String).contains("ready") && (($0 as NSNotification).userInfo!["toString"] as! String).contains("working")
+    expectation(forNotification: GauntletNotification.willTransition, object: machine) { notification in
+      let info = notification.userInfo
+      return (info!["from"] as! State) == State.ready
+        && (info!["to"] as! State) == State.working
     }
-    expectation(forNotification: GauntletNotification.didTransition, object: machine) {
-      return (($0 as NSNotification).userInfo!["fromString"] as! String).contains("ready") && (($0 as NSNotification).userInfo!["toString"] as! String).contains("working")
+    expectation(forNotification: GauntletNotification.didTransition, object: machine) { notification in
+      let info = notification.userInfo
+      return (info!["from"] as! State) == State.ready
+        && (info!["to"] as! State) == State.working
     }
     machine.delegates.didTransition = { from, to in
       if case (.ready, .working) = (from, to) {

@@ -14,10 +14,8 @@ import Foundation
  
  Both will post a `userInfo` with the following values:
  
- * `fromString`: String value of the `StateType` the `StateMachine` did/will transition from.
- * `fromBox`: Boxed version of the `StateType` the `StateMachine` did/will transition from. Use the `value` property to unbox the `StateType`.
- * `toString`: String value of the `StateType` the `StateMachine` did/will transition to.
- * `toBox`: Boxed version of the `StateType` the `StateMachine` did/will transitioning to. Use the `value` property to unbox the `StateType`.
+ * `from`: The `StateType` the `StateMachine` did/will transition from.
+ * `to`: The `StateType` the `StateMachine` did/will transition to.
  */
 public class StateMachine<T: StateType> {
   /**
@@ -78,9 +76,9 @@ public class StateMachine<T: StateType> {
     if state.shouldTransition(to: to) {
       let from = state
       state = to
-      postNotification(withName: GauntletNotification.willTransition, userInfo: makeUserInfo(withFrom: from, to: to))
+      postNotification(GauntletNotification.willTransition, from: from, to: to)
       delegates.didTransition?(from, to)
-      postNotification(withName: GauntletNotification.didTransition, userInfo: makeUserInfo(withFrom: from, to: to))
+      postNotification(GauntletNotification.didTransition, from: from, to: to)
     }
   }
 }
@@ -88,23 +86,24 @@ public class StateMachine<T: StateType> {
 
 
 private extension StateMachine {
-  func postNotification(withName name: Notification.Name, userInfo: [AnyHashable: Any]) {
-    guard testingEnvironmentDefined else {
+  func postNotification(_ name: Notification.Name, from: T, to: T) {
+    guard Helper.isTestingEnvironmentDefined else {
       return
     }
-    NotificationCenter.default.post(name: name, object: self, userInfo: userInfo)
+    NotificationCenter.default.post(name: name, object: self, userInfo: makeUserInfo(from: from, to: to))
   }
   
   
-  func makeUserInfo(withFrom from: T, to: T) -> [AnyHashable: Any] {
-    return ["fromString": String(describing: from),
-            "fromBox": StateBox(value:from),
-            "toString": String(describing: to),
-            "toBox": StateBox(value:to)]
+  private func makeUserInfo(from: T, to: T) -> [AnyHashable: Any] {
+    return ["from": from,
+            "to": to]
   }
+}
 
-  
-  var testingEnvironmentDefined: Bool {
+
+
+private enum Helper {
+  static var isTestingEnvironmentDefined: Bool {
     return ProcessInfo.processInfo.environment["GAUNTLET_POST_TEST_NOTIFICATIONS"] != nil
   }
 }
