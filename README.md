@@ -106,4 +106,4 @@ machine.delegates.didTransition = { [weak self] from, to in
 ```
 
 ## API
-Full API documentation [can be found here](https://jemmons.github.io/Gauntlet/Protocols/StateType.html).
+Full API documentation [can be found here](https://jemmons.github.io/Gauntlet/Protocols/Transitionable.html).
