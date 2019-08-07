@@ -98,7 +98,7 @@
 				73BAF24D1E5CF04800DBE45A /* GauntletNotifitcation.swift */,
 			);
 			name = Sources;
-			path = ../Sources;
+			path = ../Sources/Gauntlet;
 			sourceTree = "<group>";
 		};
 		73E4FD1A1AFD4E040058C1AF /* Tests */ = {
@@ -109,7 +109,7 @@
 				73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */,
 			);
 			name = Tests;
-			path = ../Tests;
+			path = ../Tests/GauntletTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
