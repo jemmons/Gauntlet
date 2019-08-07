@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		73584FB11B079CD800B3CA74 /* TransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73584FB01B079CD800B3CA74 /* TransitionTests.swift */; };
-		73BAF2461E5B5BE000DBE45A /* StateBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73BAF2451E5B5BE000DBE45A /* StateBox.swift */; };
 		73BAF24E1E5CF04800DBE45A /* GauntletNotifitcation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73BAF24D1E5CF04800DBE45A /* GauntletNotifitcation.swift */; };
 		73E3D0101C4C122600DFA67A /* CaptureSelfTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */; };
 		73E4FD171AFD4E040058C1AF /* Gauntlet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73E4FD0B1AFD4E040058C1AF /* Gauntlet.framework */; };
@@ -31,7 +30,6 @@
 		73584FB01B079CD800B3CA74 /* TransitionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransitionTests.swift; sourceTree = "<group>"; };
 		7367BD6F1C4C858500CB17D7 /* Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
 		73BAF2431E5B5A2500DBE45A /* .jazzy.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .jazzy.yaml; path = ../.jazzy.yaml; sourceTree = "<group>"; };
-		73BAF2451E5B5BE000DBE45A /* StateBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateBox.swift; sourceTree = "<group>"; };
 		73BAF24D1E5CF04800DBE45A /* GauntletNotifitcation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GauntletNotifitcation.swift; sourceTree = "<group>"; };
 		73BAF2531E5CF5D000DBE45A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptureSelfTests.swift; sourceTree = "<group>"; };
@@ -98,10 +96,9 @@
 				73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */,
 				73E4FD2B1AFD51C00058C1AF /* StateType.swift */,
 				73BAF24D1E5CF04800DBE45A /* GauntletNotifitcation.swift */,
-				73BAF2451E5B5BE000DBE45A /* StateBox.swift */,
 			);
 			name = Sources;
-			path = ../Sources;
+			path = ../Sources/Gauntlet;
 			sourceTree = "<group>";
 		};
 		73E4FD1A1AFD4E040058C1AF /* Tests */ = {
@@ -112,7 +109,7 @@
 				73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */,
 			);
 			name = Tests;
-			path = ../Tests;
+			path = ../Tests/GauntletTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,20 +173,21 @@
 				TargetAttributes = {
 					73E4FD0A1AFD4E040058C1AF = {
 						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1100;
 					};
 					73E4FD151AFD4E040058C1AF = {
 						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1100;
 					};
 				};
 			};
 			buildConfigurationList = 73E4FD051AFD4E040058C1AF /* Build configuration list for PBXProject "Gauntlet" */;
 			compatibilityVersion = "Xcode 8.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 73E4FD011AFD4E040058C1AF;
 			productRefGroup = 73E4FD0C1AFD4E040058C1AF /* Products */;
@@ -226,7 +224,6 @@
 			files = (
 				73E4FD2C1AFD51C00058C1AF /* StateType.swift in Sources */,
 				73BAF24E1E5CF04800DBE45A /* GauntletNotifitcation.swift in Sources */,
-				73BAF2461E5B5BE000DBE45A /* StateBox.swift in Sources */,
 				73E4FD281AFD4E1B0058C1AF /* StateMachine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -370,18 +367,21 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CURRENT_PROJECT_VERSION = 40100;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Gauntlet;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -390,17 +390,20 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CURRENT_PROJECT_VERSION = 40100;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Gauntlet;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -418,7 +421,7 @@
 				PRODUCT_NAME = GauntletTests;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -431,7 +434,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mcmxcix.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = GauntletTests;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

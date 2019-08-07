@@ -8,9 +8,8 @@ module: Gauntlet
 custom_categories:
   - name: Public Interface
     children:
-    - StateType
+    - Transitionable
     - StateMachine
-    - StateTransitionDelegates
   - name: Constants
     children:
     - GauntletNotification
