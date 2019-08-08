@@ -65,16 +65,20 @@ public class StateMachine<State> where State: Transitionable {
   
   
   /**
-   Use this method to transition states. It first take the given `state` and determine its validity via `StateType.shouldTransitionFrom(_,to:)`. If it is, it transitions the machine to it, calling `transformationHandler` once complete. If not, the given `state` is silently ignored.
+   Use this method to transition states.
    
-   * parameter state: The state to transition to.
-   * attention: This method queues the state transition to happen on the next pass of the run loop. Thus, it's safe to call `queue(_)` from `didTransition` without concern for the stack. However, this also means that even valid calls to `queue(_)` will not be reflected immediately in the state machine:
+   First, the validity of a transition to the given `state` is determined via a call to its `shouldTransitionFrom(_,to:)`. If it is valid, the machine tranisitons to it, calling `didTransition(from:to:)` once complete. If not, the given `state` is silently ignored.
    
-   ```
-   let machine = StateMachine(initialState: State.ready)
-   machine.queue(State.fetch)
-   machine.state //> State.ready
-   ```
+   - Attention:
+       This method queues the state transition to happen on the next pass of the run loop. Thus, it's safe to call `queue(_)` from `didTransition(from:to:)` without concern for the stack. However, this also means that even calls to `queue(_)` with valid transition targets will not be reflected immediately in the state:
+   
+       ```
+       let machine = StateMachine(initialState: State.ready)
+       machine.queue(State.fetch)
+       machine.state //> still `State.ready`
+       ```
+   
+   - Parameter state: The state to transition to.
    */
   public func queue(_ state: State) {
     OperationQueue.main.addOperation { [weak self] () -> Void in

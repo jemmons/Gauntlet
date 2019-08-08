@@ -1,7 +1,9 @@
 import Foundation
 
 
-
+/**
+ Deprecated. Use `Transitionable` instead.
+ */
 @available(*, deprecated, message: "`StateType` has been renamed `Transitionable` to better reflect its semeantics." )
 public typealias StateType = Transitionable
 

@@ -1,1 +1,1 @@
-<entry><version>4.0</version><url>https://jemmons.github.io/Gauntlet/docsets/Gauntlet.tgz</url></entry>
+<entry><version>$(MARKETING_VERSION)</version><url>https://jemmons.github.io/Gauntlet/docsets/Gauntlet.tgz</url></entry>
