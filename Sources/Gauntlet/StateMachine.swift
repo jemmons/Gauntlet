@@ -1,5 +1,8 @@
 import Foundation
 
+#if canImport(Combine)
+import Combine
+#endif
 
 
 /**
@@ -36,6 +39,35 @@ public class StateMachine<State> where State: Transitionable {
     public var didTransition: ((_ from: State, _ to: State) -> Void)?
   }
 
+  
+  @available(iOS 13, macOS 10.15, *)
+  lazy private var _publisher = PassthroughSubject<(from: State, to: State), Never>()
+
+
+  /**
+   Publishes state changes after valid transitions.
+   
+   Consumers can subscribe (in the `Combine` sense) to `publisher` to recieve a set of `State` values immediately after every valid transition:
+   
+   ```
+   let machine = StateMachine(initialState: State.ready)
+   //...
+   let subscription = machine.publisher.sink { from, to in
+     // stuff to do when `machine` has transitioned
+     // to or from particular states...
+   }
+   ```
+   
+   - Note: In systems that support it (iOS 13, macOS Catalina), this can be used as a replacement for the somewhat hackey practice of assigning a closure to `delegates.didTransition`.
+   
+       At some point in the future `Combine` will have a larger installed base, `publisher` will be the blessed way to respond to state changes, and the `delegates` property will be deprecated with extreme prejudice.
+   */
+  @available(iOS 13, macOS 10.15, *)
+  public var publisher: AnyPublisher<(from: State, to: State), Never> {
+    return _publisher.eraseToAnyPublisher()
+  }
+  
+  
   
   /**
    Consumers can assign implementations to protperties of `delegates` to respond to lifecycle events.
@@ -92,6 +124,9 @@ public class StateMachine<State> where State: Transitionable {
       let from = state
       postNotification(GauntletNotification.willTransition, from: from, to: to)
       state = to
+      if #available(iOS 13, macOS 10.15, *) {
+        _publisher.send((from: from, to: to))
+      }
       delegates.didTransition?(from, to)
       postNotification(GauntletNotification.didTransition, from: from, to: to)
     }

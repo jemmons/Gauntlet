@@ -124,6 +124,50 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:8Gauntlet12StateMachineC9publisherXevp"></a>
+                    <a name="//apple_ref/swift/Property/publisher" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Gauntlet12StateMachineC9publisherXevp">publisher</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Publishes state changes after valid transitions.</p>
+
+<p>Consumers can subscribe (in the <code>Combine</code> sense) to <code>publisher</code> to recieve a set of <code>State</code> values immediately after every valid transition:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">machine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">State</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="c1">//...</span>
+<span class="k">let</span> <span class="nv">subscription</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// stuff to do when `machine` has transitioned</span>
+  <span class="c1">// to or from particular states...</span>
+<span class="p">}</span>
+</code></pre>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>In systems that support it (iOS 13, macOS Catalina), this can be used as a replacement for the somewhat hackey practice of assigning a closure to <code>delegates.didTransition</code>.</p>
+
+<p>At some point in the future <code>Combine</code> will have a larger installed base, <code>publisher</code> will be the blessed way to respond to state changes, and the <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC9delegatesAC0B19TransitionDelegatesVyx_Gvp">delegates</a></code> property will be deprecated with extreme prejudice.</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@available(iOS 13, OSX 10.15, *)</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">publisher</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="kt">State</span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="kt">State</span><span class="p">),</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:8Gauntlet12StateMachineC9delegatesAC0B19TransitionDelegatesVyx_Gvp"></a>
                     <a name="//apple_ref/swift/Property/delegates" class="dashAnchor"></a>
                     <a class="token" href="#/s:8Gauntlet12StateMachineC9delegatesAC0B19TransitionDelegatesVyx_Gvp">delegates</a>

@@ -14,6 +14,7 @@
 		73E4FD281AFD4E1B0058C1AF /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */; };
 		73E4FD2C1AFD51C00058C1AF /* StateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD2B1AFD51C00058C1AF /* StateType.swift */; };
 		73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */; };
+		C1CB8C5F22FCDFC40010E73E /* PublisherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CB8C5D22FCDFBF0010E73E /* PublisherTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		73E4FD271AFD4E1B0058C1AF /* StateMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateMachine.swift; sourceTree = "<group>"; };
 		73E4FD2B1AFD51C00058C1AF /* StateType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateType.swift; sourceTree = "<group>"; };
 		73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialTests.swift; sourceTree = "<group>"; };
+		C1CB8C5D22FCDFBF0010E73E /* PublisherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 			children = (
 				73E4FD3D1AFD68420058C1AF /* ExistentialTests.swift */,
 				73584FB01B079CD800B3CA74 /* TransitionTests.swift */,
+				C1CB8C5D22FCDFBF0010E73E /* PublisherTests.swift */,
 				73E3D00F1C4C122600DFA67A /* CaptureSelfTests.swift */,
 			);
 			name = Tests;
@@ -232,6 +235,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1CB8C5F22FCDFC40010E73E /* PublisherTests.swift in Sources */,
 				73E3D0101C4C122600DFA67A /* CaptureSelfTests.swift in Sources */,
 				73584FB11B079CD800B3CA74 /* TransitionTests.swift in Sources */,
 				73E4FD3E1AFD68420058C1AF /* ExistentialTests.swift in Sources */,
