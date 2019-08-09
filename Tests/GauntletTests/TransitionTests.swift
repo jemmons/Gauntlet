@@ -40,11 +40,13 @@ class TransitionTests : XCTestCase{
   func testValidTransition(){
     let expectWorking = expectation(description: "Completed Transition")
     expectation(forNotification: GauntletNotification.willTransition, object: machine) { notification in
+      XCTAssertEqual(State.ready, self.machine.state)
       let info = notification.userInfo
       return (info!["from"] as! State) == State.ready
         && (info!["to"] as! State) == State.working
     }
     expectation(forNotification: GauntletNotification.didTransition, object: machine) { notification in
+      XCTAssertEqual(State.working, self.machine.state)
       let info = notification.userInfo
       return (info!["from"] as! State) == State.ready
         && (info!["to"] as! State) == State.working

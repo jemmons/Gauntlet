@@ -90,8 +90,8 @@ public class StateMachine<State> where State: Transitionable {
   private func delegateTransition(to: State) {
     if state.shouldTransition(to: to) {
       let from = state
-      state = to
       postNotification(GauntletNotification.willTransition, from: from, to: to)
+      state = to
       delegates.didTransition?(from, to)
       postNotification(GauntletNotification.didTransition, from: from, to: to)
     }
