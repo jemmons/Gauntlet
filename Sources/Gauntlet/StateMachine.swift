@@ -20,6 +20,7 @@ import Combine
  * `from`: The `StateType` the `StateMachine` did/will transition from.
  * `to`: The `StateType` the `StateMachine` did/will transition to.
  */
+@propertyWrapper
 public class StateMachine<State> where State: Transitionable {
   /**
    Delegate tasks of `StateMachine`. Consumers can assign implementations to respond to lifecycle events.
@@ -39,6 +40,17 @@ public class StateMachine<State> where State: Transitionable {
     public var didTransition: ((_ from: State, _ to: State) -> Void)?
   }
 
+  
+  /**
+   Consumers can assign implementations to protperties of `delegates` to respond to lifecycle events.
+   
+   - Note:
+       Why assign a closure for delegated functionality instead of the more standard “set a reference to a class that conforms to a delegate protocol”? Because it’s important the states passed to the delegate method have the same type as `State` (relative to the `StateMachine` class).
+       
+       To do this with a protocol is a bit of a mess because it involves associated types. This has gotten better with conditional conformance, but we still have to make it a top-level generic type, and that’s still ugly (it requrires we give a delegate type even if we don’t use one, it can’t infer the type if we don’t add the delegate as an initialization parameter, etc).
+   */
+  public var delegates = StateTransitionDelegates()
+  
   
   @available(iOS 13, macOS 10.15, *)
   lazy private var _publisher = PassthroughSubject<(from: State, to: State), Never>()
@@ -68,17 +80,17 @@ public class StateMachine<State> where State: Transitionable {
   }
   
   
+  public var wrappedValue: State {
+    get { state }
+    set { queue(newValue) }
+  }
   
-  /**
-   Consumers can assign implementations to protperties of `delegates` to respond to lifecycle events.
-   
-   - Note:
-       Why assign a closure for delegated functionality instead of the more standard “set a reference to a class that conforms to a delegate protocol”? Because it’s important the states passed to the delegate method have the same type as `State` (relative to the `StateMachine` class).
-       
-       To do this with a protocol is a bit of a mess because it involves associated types. This has gotten better with conditional conformance, but we still have to make it a top-level generic type, and that’s still ugly (it requrires we give a delegate type even if we don’t use one, it can’t infer the type if we don’t add the delegate as an initialization parameter, etc).
-   */
-  public var delegates = StateTransitionDelegates()
   
+  @available(iOS 13, macOS 10.15, *)
+  public var projectedValue: AnyPublisher<(from: State, to: State), Never> {
+    get { publisher }
+  }
+    
   
   /**
    The current state of the state machine. Read-only.
@@ -93,6 +105,11 @@ public class StateMachine<State> where State: Transitionable {
    */
   public init(initialState: State) {
     state = initialState //set the internal value so we don't need a special rule in «shouldTranistionFrom(_,to:)». Also avoids calling «didTransition».
+  }
+  
+  
+  convenience public init(wrappedValue: State) {
+    self.init(initialState: wrappedValue)
   }
   
   
