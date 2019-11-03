@@ -1,105 +1,108 @@
 import XCTest
 import Gauntlet
-
-#if canImport(Combine)
 import Combine
-#endif
 
 
 
-@available(iOS 13, macOS 10.15, *)
 class PublisherTests: XCTestCase {
-  enum State: Transitionable, Equatable {
-    case ready, working, done
-    func shouldTransition(to: State) -> Bool {
-      switch (self, to) {
-      case
-      (.ready, .ready),
-      (.ready, .working),
-      (.working, .done),
-      (.done, .ready):
-        return true
-      default:
-        return false
-      }
-    }
-  }
-
-
-  var machine = StateMachine(initialState: State.ready)
-  
+  var machine = StateMachine(initialState: MyState.ready)
   
   
   func testValidTransition(){
     let expectWorking = expectation(description: "Completed Transition")
     let sub = machine.publisher.sink { from, to in
       if case (.ready, .working) = (from, to) {
-        XCTAssertEqual(self.machine.state, State.working)
+        XCTAssertEqual(self.machine.state, .working)
         expectWorking.fulfill()
       }
     }
-    machine.queue(.working)
+    machine.transition(to: .working)
     
     wait(for: [expectWorking], timeout: 1)
   }
   
   
+  /// `testInvalidTransition` relies on the state-changing operation completing before the expectation is fulfilled on whatever thread we're on. This tests that that's the case.
+  func testTimingForInvalidTransition() {
+    let toWorking = expectation(description: "Waiting to transition to working.")
+    let expectQueued = expectation(description: "Queued Expectation")
+    
+    let sub = machine.publisher.sink { transition in
+      if case (.ready, .working) = transition {
+        toWorking.fulfill()
+      }
+    }
+    
+    //This will put the state-changing operation on the main queue.
+    machine.transition(to: .working)
+    
+    //This will queue up another operation -- after the state-changing one.
+    OperationQueue.current?.addOperation {
+      expectQueued.fulfill()
+    }
+    
+    wait(for: [toWorking, expectQueued], timeout: 1, enforceOrder: true)
+  }
+  
+
   func testInvalidTransition(){
     let expectQueued = expectation(description: "Queued Expectation")
     
     let sub = machine.publisher.sink { from, to in
       XCTFail("Handler for invalid transition should not have been called.")
     }
-    machine.queue(.done)
-    OperationQueue.main.addOperation { expectQueued.fulfill() }
-    
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.ready)
+    machine.transition(to: .success("foo"))
+    OperationQueue.main.addOperation {
+      XCTAssertEqual(self.machine.state, .ready)
+      expectQueued.fulfill()
     }
+    
+    wait(for: [expectQueued], timeout: 1)
   }
   
   
-  func testValidDoubleTransition(){
-    let expectDoubleReady = expectation(description: "Transition Complete")
+  func testValidSelfTransition(){
+    let selfTransition = expectation(description: "Transition Complete")
     
-    let sub = machine.publisher.sink { from, to in
-      if case (.ready, .ready) = (from, to) {
-        expectDoubleReady.fulfill()
+    let sub = machine.publisher.sink { transition in
+      if case (.ready, .ready) = transition {
+        XCTAssertEqual(self.machine.state, .ready)
+        selfTransition.fulfill()
       }
     }
-    machine.queue(.ready)
+    machine.transition(to: .ready)
     
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.ready)
-    }
+    wait(for: [selfTransition], timeout: 1)
   }
   
   
-  func testInvalidDoubleTransition(){
+  func testInvalidSelfTransition(){
     let expectWorking = expectation(description: "Transition Complete")
     let expectQueued = expectation(description: "Queued Expectation")
     
-    let sub = machine.publisher.sink { from, to in
-      switch (from, to) {
+    let sub = machine.publisher.sink { transition in
+      switch transition {
       case (.ready, .working):
         expectWorking.fulfill()
       default:
         XCTFail("Transition is invalid.")
       }
     }
-    machine.queue(.working)
-    machine.queue(.working)
-    OperationQueue.main.addOperation { expectQueued.fulfill() }
+    machine.transition(to: .working)
+    machine.transition(to: .working)
     
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.working)
+    OperationQueue.current?.addOperation {
+      XCTAssertEqual(self.machine.state, .working)
+      expectQueued.fulfill()
     }
+    
+    wait(for: [expectWorking, expectQueued], timeout: 1)
   }
   
   
   func testNestedTransitions(){
-    let expectWorking = expectation(description: "Transition Complete")
-    let expectDone = expectation(description: "Transition Complete")
+    let expectWorking = expectation(description: "Transition to working.")
+    let expectSuccess = expectation(description: "Trasition to success.")
     var inWorking = false
     
     let sub = machine.publisher.sink { _, to in
@@ -108,26 +111,27 @@ class PublisherTests: XCTestCase {
         inWorking = true
         defer { inWorking = false }
         expectWorking.fulfill()
-        self.machine.queue(.done)
-      case .done:
+        self.machine.transition(to: .success("foo"))
+      case .success:
         XCTAssertFalse(inWorking, "no other handler should be on the stack")
-        expectDone.fulfill()
+        expectSuccess.fulfill()
       default:
         XCTFail()
       }
     }
-    machine.queue(.working)
     
-    wait(for: [expectWorking, expectDone], timeout: 1)
+    machine.transition(to: .working)
+    
+    wait(for: [expectWorking, expectSuccess], timeout: 1)
   }
   
   
   func testNilSelf() {
-    var subject:StateMachine? = StateMachine(initialState: State.ready)
-    let sub = subject?.publisher.sink { from, to in
+    var subject:StateMachine? = StateMachine(initialState: MyState.ready)
+    let sub = subject!.publisher.sink { _ in
       XCTFail("Should never be called.")
     }
-    subject!.queue(.working)
+    subject!.transition(to: .working)
     subject = nil
     
     let expectTimeWasted = expectation(description: "Should waste time.")
@@ -135,53 +139,54 @@ class PublisherTests: XCTestCase {
       expectTimeWasted.fulfill()
     }
     //This just pumps the event loop.
-    waitForExpectations(timeout: 1.5, handler: nil)
+    wait(for: [expectTimeWasted], timeout: 1.5)
   }
   
   
   func testTransitionDelay(){
-    let expectWorking = expectation(description: "Completed Transition")
-    let sub = machine.publisher.sink { from, to in
-      if case (.ready, .working) = (from, to) {
-        expectWorking.fulfill()
+    let transitionToWorking = expectation(description: "Completed transition to working.")
+    let sub = machine.publisher.sink { transition in
+      if case (.ready, .working) = transition {
+        XCTAssertEqual(self.machine.state, .working)
+        transitionToWorking.fulfill()
       }
     }
-    machine.queue(.working)
-    XCTAssertEqual(machine.state, State.ready, "The transistion doesn't happen until the next run loop")
-    waitForExpectations(timeout: 2) { error in
-      XCTAssertEqual(self.machine.state, State.working)
-    }
+    machine.transition(to: .working)
+    XCTAssertEqual(machine.state, .working, "The transistion is applied immediately")
+
+    wait(for: [transitionToWorking], timeout: 1)
   }
     
 
   func testMultipleTransitions() {
-    let toReady = expectation(description: "Transitioned to ready.")
     let toWorking = expectation(description: "Transitioned to working.")
-    let toDone = expectation(description: "Transitioned to done.")
+    let toSuccess = expectation(description: "Transitioned to success.")
+    let toReady = expectation(description: "Transitioned to ready.")
 
-    let sub = machine.publisher.sink { [weak self] from, to in
-      switch (from, to) {
+    let sub = machine.publisher.sink { [weak self] transition in
+      switch transition {
       case (.ready, .working):
-        XCTAssertEqual(.working, self?.machine.state)
+        XCTAssertEqual(.ready, self!.machine.state, "assignments have already happened")
         toWorking.fulfill()
-      case (.working, .done):
-        XCTAssertEqual(.done, self?.machine.state)
-        toDone.fulfill()
-      case (.done, .ready):
-        XCTAssertEqual(.ready, self?.machine.state)
+      case (.working, .success):
+        XCTAssertEqual(.ready, self!.machine.state, "assignments have already happened")
+        toSuccess.fulfill()
+      case (.success, .ready):
+        XCTAssertEqual(.ready, self!.machine.state, "assignments have already happened")
         toReady.fulfill()
       default:
         XCTFail()
       }
     }
     
-    machine.queue(.working)
     XCTAssertEqual(.ready, machine.state)
-    machine.queue(.done)
-    XCTAssertEqual(.ready, machine.state)
-    machine.queue(.ready)
+    machine.transition(to: .working)
+    XCTAssertEqual(.working, machine.state)
+    machine.transition(to: .success("foo"))
+    XCTAssertEqual(.success("foo"), machine.state)
+    machine.transition(to: .ready)
     XCTAssertEqual(.ready, machine.state)
 
-    wait(for: [toReady, toWorking, toDone], timeout: 2)
+    wait(for: [toWorking, toSuccess, toReady], timeout: 1, enforceOrder: true)
   }
 }

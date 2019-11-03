@@ -3,33 +3,25 @@ import Gauntlet
 
 
 
-@available(iOS 13, macOS 10.15, *)
 class PropertyWrapperTests: XCTestCase {
-  enum State: Transitionable {
-    case ready, working, done
-    
-    func shouldTransition(to: PropertyWrapperTests.State) -> Bool {
-      switch (self, to) {
-      case (.ready, .ready),
-           (.ready, .working),
-           (.working, .done),
-           (.done, .ready):
-        return true
-      default:
-        return false
-      }
+  @StateMachine var state: MyState = .ready
+  
+  
+  func testInitialState() {
+    switch state {
+    case .ready:
+      XCTAssert(true)
+    default:
+      XCTFail()
     }
   }
   
   
-  @StateMachine var state: State = .ready
-  
-  
   func testTransitions() {
-    XCTAssertEqual(.ready, state)
     let transition = expectation(description: "Waiting for transition")
-    let sub = $state.sink { set in
-      switch set {
+    
+    let sub = $state.sink { trans in
+      switch trans {
       case (.ready, .working):
         XCTAssertEqual(.working, self.state)
         transition.fulfill()
@@ -37,6 +29,7 @@ class PropertyWrapperTests: XCTestCase {
         break
       }
     }
+    
     state = .working
     
     wait(for: [transition], timeout: 1)
@@ -47,10 +40,12 @@ class PropertyWrapperTests: XCTestCase {
     let noChange = expectation(description: "The state should not have changed.")
 
     let sub = $state.sink { from, to in
-      XCTFail("Handler for invalid transition should not have been called.")
+      XCTFail("Invalid transition should not publish.")
     }
-    state = .done
-    OperationQueue.main.addOperation {
+    
+    state = .success("hello")
+    
+    OperationQueue.current?.addOperation {
       XCTAssertEqual(.ready, self.state)
       noChange.fulfill()
     }
@@ -59,18 +54,19 @@ class PropertyWrapperTests: XCTestCase {
   }
 
   
-  func testValidDoubleTransition(){
-    let doubleReady = expectation(description: "Expect from ready to ready.")
+  func testValidSelfTransition(){
+    let selfTransition = expectation(description: "Expect from ready to ready.")
 
-    let sub = $state.sink { set in
-      if case (.ready, .ready) = set {
+    let sub = $state.sink { trans in
+      if case (.ready, .ready) = trans {
         XCTAssertEqual(.ready, self.state)
-        doubleReady.fulfill()
+        selfTransition.fulfill()
       }
     }
+    
     state = .ready
 
-    wait(for: [doubleReady], timeout: 1)
+    wait(for: [selfTransition], timeout: 1)
   }
   
   
@@ -78,17 +74,19 @@ class PropertyWrapperTests: XCTestCase {
     let toWorking = expectation(description: "Waiting for transition to working.")
     let noChange = expectation(description: "Expecting no tranistion.")
     
-    let sub = $state.sink { set in
-      switch set {
+    let sub = $state.sink { transition in
+      switch transition {
       case (.ready, .working):
         toWorking.fulfill()
       default:
         XCTFail("Invalid transitions should not be published.")
       }
     }
+    
     state = .working
     state = .working
-    OperationQueue.main.addOperation {
+    
+    OperationQueue.current?.addOperation {
       XCTAssertEqual(.working, self.state)
       noChange.fulfill()
     }
@@ -98,8 +96,8 @@ class PropertyWrapperTests: XCTestCase {
   
   
   func testNestedTransitions(){
-    let toWorking = expectation(description: "Transition Complete")
-    let toDone = expectation(description: "Transition Complete")
+    let toWorking = expectation(description: "Transition to .working complete")
+    let toSuccess = expectation(description: "Transition to .success complete")
     var inWorking = false
     
     let sub = $state.sink { _, to in
@@ -108,50 +106,63 @@ class PropertyWrapperTests: XCTestCase {
         inWorking = true
         defer { inWorking = false }
         toWorking.fulfill()
-        self.state = .done
-      case .done:
+        self.state = .success("Hello")
+      case .success:
         XCTAssertFalse(inWorking, "no other handler should be on the stack")
-        XCTAssertEqual(.done, self.state)
-        toDone.fulfill()
+        // When transitions only happen in subscriptions, we can count on the state being what we think it should be:
+        XCTAssertEqual(.success("Hello"), self.state)
+        toSuccess.fulfill()
       default:
         XCTFail()
       }
     }
+    
     state = .working
     
-    wait(for: [toWorking, toDone], timeout: 1)
+    wait(for: [toWorking, toSuccess], timeout: 1)
   }
   
   
   func testTransitionDelay(){
-    let toWorking = expectation(description: "Waiting for transition to working.")
-    let sub = $state.sink { set in
-      if case (.ready, .working) = set {
-        XCTAssertEqual(self.state, .working)
+    let toWorking = expectation(description: "Waiting for transition to .working.")
+    let toSuccess = expectation(description: "Waiting for transition to .success.")
+
+    let sub = $state.sink { transition in
+      switch transition {
+      case (.ready, .working):
+        // By the time our subscription get this, state has already moved on to .success.
+        XCTAssertEqual(.success("hello"), self.state)
         toWorking.fulfill()
+      case (.working, .success):
+        // This will come down the subscription immediately after the last. We'd expect `state`'s value to be the same.
+        XCTAssertEqual(.success("hello"), self.state)
+        toSuccess.fulfill()
+      default:
+        XCTFail()
       }
     }
+    
     state = .working
-    XCTAssertEqual(state, State.ready, "The transistion doesn't happen until the next run loop")
-    wait(for: [toWorking], timeout: 1)
+    state = .success("hello")
+    
+    XCTAssertEqual(state, .success("hello"), "The transistions happen immediately.")
+
+    wait(for: [toWorking, toSuccess], timeout: 1, enforceOrder: true)
   }
     
 
   func testMultipleTransitions() {
-    let toReady = expectation(description: "Transitioned to ready.")
     let toWorking = expectation(description: "Transitioned to working.")
-    let toDone = expectation(description: "Transitioned to done.")
+    let toSuccess = expectation(description: "Transitioned to success.")
+    let toReady = expectation(description: "Transitioned to ready.")
 
-    let sub = $state.sink {  from, to in
-      switch (from, to) {
+    let sub = $state.sink {  transition in
+      switch transition {
       case (.ready, .working):
-        XCTAssertEqual(.working, self.state)
         toWorking.fulfill()
-      case (.working, .done):
-        XCTAssertEqual(.done, self.state)
-        toDone.fulfill()
-      case (.done, .ready):
-        XCTAssertEqual(.ready, self.state)
+      case (.working, .success):
+        toSuccess.fulfill()
+      case (.success, .ready):
         toReady.fulfill()
       default:
         XCTFail()
@@ -159,13 +170,10 @@ class PropertyWrapperTests: XCTestCase {
     }
     
     state = .working
-    XCTAssertEqual(.ready, state)
-    state = .done
-    XCTAssertEqual(.ready, state)
+    state = .success("woo")
     state = .ready
-    XCTAssertEqual(.ready, state)
 
-    wait(for: [toReady, toWorking, toDone], timeout: 2)
+    wait(for: [toWorking, toSuccess, toReady], timeout: 2, enforceOrder: true)
   }
 
 }

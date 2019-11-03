@@ -2,14 +2,6 @@ import Foundation
 
 
 /**
- Deprecated. Use `Transitionable` instead.
- */
-@available(*, deprecated, message: "`StateType` has been renamed `Transitionable` to better reflect its semeantics." )
-public typealias StateType = Transitionable
-
-
-
-/**
  Describes the primary unit of state in a `StateMachine`. In theory, this could be any type capable of calculating whether a transition between two instances of itself is legal. In practice, it’s almost always an `enum`:
  
  ```
