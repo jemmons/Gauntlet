@@ -4,6 +4,16 @@
 
 Gauntlet is a swift-friendly [state machine](https://en.wikipedia.org/wiki/Finite-state_machine) focusing on simple configuration and light weight objects. It was originally inspired by [a series of blog posts over on figure.ink](http://www.figure.ink/blog/2015/1/31/swift-state-machines-part-1), but has evolved substantially since then.
 
+## Table of Contents
+* [Simple Configuration](#simple-configuration)
+* [Light Weight Objects](#light-weight-objects)
+* [Property Wrapper](#property-wrapper)
+* [Associating Values](#associating-values)
+* [Migrating from Gauntlet v4](#migrating-from-gauntlet-v4x)
+* [API](#api)
+* [Contributing](#contributing)
+* [License](#license)
+
 ## Simple Configuration
 Rather than requiring complicated graphs and configuration XML, state in Gauntlet is modeled by a single type (conforming to `Transitionable`) that is capable of determining whether transitions to other instances of itself are allowed. 
 
@@ -159,7 +169,14 @@ Version 5 of Gauntlet presents a number of breaking changes.
     
     Now that transitions happen syncronously in version 5, these are no longer necessary and have been removed.
 
-
-
 ## API
 Full API documentation [can be found here](https://jemmons.github.io/Gauntlet/Classes/StateMachine.html).
+
+## Contributing
+[Pull requests](https://github.com/jemmons/Gauntlet/pulls) are welcome! Please keep in mind this is a weekend project, though, so reviews times measured in “*n* of weeks” are to be expected.
+
+Found a bug? Want a feature? [Issues](https://github.com/jemmons/Gauntlet/issues) are the way to communicate! Though the same disclaimers around response times apply. Thank you for your patience.
+
+## License
+`Gauntlet` is released under the MIT license. [See LICENSE](https://github.com/jemmons/Gauntlet/blob/master/LICENSE) for details.
+
