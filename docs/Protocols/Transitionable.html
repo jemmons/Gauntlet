@@ -30,32 +30,18 @@
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a href="../Public Interface.html">Public Interface</a>
+            <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Protocols/Transitionable.html">Transitionable</a>
-              </li>
               <li class="nav-group-task">
                 <a href="../Classes/StateMachine.html">StateMachine</a>
               </li>
-              <li class="nav-group-task">
-                <a href="../Classes/StateMachine/StateTransitionDelegates.html">– StateTransitionDelegates</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="../Constants.html">Constants</a>
+            <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Enums/GauntletNotification.html">GauntletNotification</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="../Other Typealiases.html">Other Type Aliases</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Other Typealiases.html#/s:8Gauntlet9StateTypea">StateType</a>
+                <a href="../Protocols/Transitionable.html">Transitionable</a>
               </li>
             </ul>
           </li>
@@ -71,12 +57,20 @@
 
                 </div>
               </div>
-            <p>Describes the primary unit of state in a <code><a href="../Classes/StateMachine.html">StateMachine</a></code>. In theory, this could be any type capable of calculating whether a transition between two instances of itself is legal. In practice, it’s almost always an <code>enum</code>:</p>
-<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">MyState</span><span class="p">:</span> <span class="kt">Transitionable</span> <span class="p">{</span>
-  <span class="k">case</span> <span class="kt">Red</span><span class="p">,</span> <span class="kt">Yellow</span><span class="p">,</span> <span class="kt">Green</span> 
-  <span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt">MyState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+            <p>The “state” part of our finite state machine.</p>
+
+<p>Instances of the conforming type model the states of our system. Their implementations of <code>shouldTrasition(to:)</code> determine what transitions between states are allowed.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <p>In theory, this could be any type capable of calculating whether a transition between two instances of itself are legal. In practice, it’s almost always best to use an <code>enum</code>. For example:</p>
+<pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">TrafficLight</span><span class="p">:</span> <span class="kt">Transitionable</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="n">red</span><span class="p">,</span> <span class="n">yellow</span><span class="p">,</span> <span class="n">green</span>
+
+  <span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="k">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
     <span class="k">switch</span> <span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="kt">Red</span><span class="p">,</span> <span class="kt">Green</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="kt">Green</span><span class="p">,</span> <span class="o">.</span><span class="kt">Yellow</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="kt">Yellow</span><span class="p">,</span> <span class="kt">Red</span><span class="p">):</span>
+    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">),</span>
+         <span class="p">(</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="o">.</span><span class="n">yellow</span><span class="p">),</span>
+         <span class="p">(</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="n">red</span><span class="p">):</span>
       <span class="k">return</span> <span class="kc">true</span>
     <span class="k">default</span><span class="p">:</span>
       <span class="k">return</span> <span class="kc">false</span>
@@ -84,6 +78,8 @@
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
+
+</div>
 
           </section>
           <section class="section task-group-section">
@@ -102,7 +98,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Defines whether a transition between two states is legal or illegal.</p>
+                        <p>Defines whether a transition from <code>self</code> to the given state is valid.</p>
 
                       </div>
                       <div class="declaration">
@@ -144,8 +140,8 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-08-08)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-11-04)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

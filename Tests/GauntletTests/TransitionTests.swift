@@ -3,200 +3,66 @@ import XCTest
 import Gauntlet
 
 
+class ExistentialTests : XCTestCase{
+  var machine = StateMachine(initialState: MyState.ready)
+  
+  
+  func testInitialState(){
+    switch machine.state{
+    case .ready:
+      XCTAssert(true)
+    default:
+      XCTFail("Not Ready")
+    }
+  }
+  
+  
+  func testValidTransition() {
+    machine.transition(to: .working)
+    XCTAssertEqual(machine.state, .working)
+  }
+  
+  
+  func testInvalidTransition() {
+    machine.transition(to: .success("foo"))
+    XCTAssertEqual(machine.state, .ready)
+  }
+  
+  
+  func testMultiTransition() {
+    let error = NSError()
+    XCTAssertEqual(machine.state, .ready)
+    machine.transition(to: .working)
+    XCTAssertEqual(machine.state, .working)
+    machine.transition(to: .success("hello"))
+    XCTAssertEqual(machine.state, .success("hello"))
+    machine.transition(to: .ready)
+    XCTAssertEqual(machine.state, .ready)
+    machine.transition(to: .working)
+    XCTAssertEqual(machine.state, .working)
+    machine.transition(to: .failure(error))
+    XCTAssertEqual(machine.state, .failure(error))
+    machine.transition(to: .ready)
+    XCTAssertEqual(machine.state, .ready)
+  }
+  
+  
+  func testSomeInvalidMultiTransition() {
+    let error = NSError()
+    XCTAssertEqual(machine.state, .ready)
+    machine.transition(to: .working)
+    XCTAssertEqual(machine.state, .working)
 
-class TransitionTests : XCTestCase{
-  enum State: Transitionable, Equatable {
-    case ready, working, success(String), failure(NSError)
-    func shouldTransition(to: State) -> Bool {
-      switch (self, to) {
-      case
-      (.ready, .ready),
-      (.ready, .working),
-      (.working, .ready):
-        return true
-      default:
-        return false
-      }
-    }
-  }
-  var machine = StateMachine(initialState: State.ready)
+    machine.transition(to: .ready)
+    XCTAssertEqual(machine.state, .working, "Invalid tranisition ignored.")
 
-  
-  func testTransitionDelay(){
-    let expectWorking = expectation(description: "Completed Transition")
-    machine.delegates.didTransition = { from, to in
-      if case (.ready, .working) = (from, to) {
-        expectWorking.fulfill()
-      }
-    }
-    machine.queue(.working)
-    XCTAssertEqual(machine.state, State.ready, "The transistion doesn't happen until the next run loop")
-    waitForExpectations(timeout: 2) { error in
-      XCTAssertEqual(self.machine.state, State.working)
-    }
-  }
-  
-  
-  func testValidTransition(){
-    let expectWorking = expectation(description: "Completed Transition")
-    expectation(forNotification: GauntletNotification.willTransition, object: machine) { notification in
-      XCTAssertEqual(State.ready, self.machine.state)
-      let info = notification.userInfo
-      return (info!["from"] as! State) == State.ready
-        && (info!["to"] as! State) == State.working
-    }
-    expectation(forNotification: GauntletNotification.didTransition, object: machine) { notification in
-      XCTAssertEqual(State.working, self.machine.state)
-      let info = notification.userInfo
-      return (info!["from"] as! State) == State.ready
-        && (info!["to"] as! State) == State.working
-    }
-    machine.delegates.didTransition = { from, to in
-      if case (.ready, .working) = (from, to) {
-        expectWorking.fulfill()
-      }
-    }
-    machine.queue(.working)
+    machine.transition(to: .success("hello"))
+    XCTAssertEqual(machine.state, .success("hello"))
     
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.working)
-    }
-  }
-  
-  
-  func testMultipleTransitions(){
-    let expectWorking = expectation(description: "Completed Working")
-    let expectReady = expectation(description: "Completed Ready")
+    machine.transition(to: .failure(error))
+    XCTAssertEqual(machine.state, .success("hello"), "Invalid transition ignored.")
 
-    machine.delegates.didTransition = { _, to in
-      switch to {
-      case .working:
-        expectWorking.fulfill()
-      case .ready:
-        expectReady.fulfill()
-      default:
-        XCTFail()
-      }
-    }
-    machine.queue(.working)
-    machine.queue(.ready)
-    
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.ready)
-    }
-  }
-  
-  
-  /// `testInvalidTransition` relies on the state-changing operation completing before the expectation is fulfilled (which it always should, because the main queue is essentially FIFO). This tests that that's true.
-  func testTimingForInvalidTransition() {
-    var didTransition = false
-    let expectQueued = expectation(description: "Queued Expectation")
-    
-    machine.delegates.didTransition = { from, to in
-      didTransition = true
-    }
-    //This will put the state-changing operation on the main queue.
-    machine.queue(.working)
-    //This will queue up another operation -- after the state-changing one.
-    OperationQueue.main.addOperation { expectQueued.fulfill() }
-    
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssert(didTransition, "Our expectation should fulfill *after* the transition completes.")
-    }
-  }
-  
-  
-  func testInvalidTransition(){
-    let expectQueued = expectation(description: "Queued Expectation")
-
-    machine.delegates.didTransition = { from, to in
-      XCTFail("Handler for invalid transition should not have been called.")
-    }
-    machine.queue(.success("foo"))
-    OperationQueue.main.addOperation { expectQueued.fulfill() }
-    
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.ready)
-    }
-  }
-
-  
-  func testValidDoubleTransition(){
-    let expectDoubleReady = expectation(description: "Transition Complete")
-
-    machine.delegates.didTransition = { from, to in
-      if case (.ready, .ready) = (from, to) {
-        expectDoubleReady.fulfill()
-      }
-    }
-    machine.queue(.ready)
-
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.ready)
-    }
-  }
-  
-  
-  func testInvalidDoubleTransition(){
-    let expectWorking = expectation(description: "Transition Complete")
-    let expectQueued = expectation(description: "Queued Expectation")
-    
-    machine.delegates.didTransition = { from, to in
-      switch (from, to) {
-      case (.ready, .working):
-        expectWorking.fulfill()
-      default:
-        XCTFail("Transition is invalid.")
-      }
-    }
-    machine.queue(.working)
-    machine.queue(.working)
-    OperationQueue.main.addOperation { expectQueued.fulfill() }
-    
-    waitForExpectations(timeout: 2) { _ in
-      XCTAssertEqual(self.machine.state, State.working)
-    }
-  }
-  
-  
-  func testNestedTransitions(){
-    let expectReady = expectation(description: "Transition Complete")
-    let expectWorking = expectation(description: "Transition Complete")
-    var inWorking = false
-    
-    machine.delegates.didTransition = { _, to in
-      switch to {
-      case .ready:
-        XCTAssertFalse(inWorking, "no other handler should be on the stack")
-        expectReady.fulfill()
-      case .working:
-        inWorking = true
-        defer { inWorking = false }
-        expectWorking.fulfill()
-        self.machine.queue(.ready)
-      default:
-        XCTFail()
-      }
-    }
-    machine.queue(.working)
-    
-    waitForExpectations(timeout: 2, handler: nil)
-  }
-  
-  
-  func testNilSelf() {
-    var subject:StateMachine? = StateMachine(initialState: State.ready)
-    subject!.delegates.didTransition = { from, to in
-      XCTFail("Should never be called.")
-    }
-    subject!.queue(.working)
-    subject = nil
-    
-    let expectTimeWasted = expectation(description: "Should waste time.")
-    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1 * NSEC_PER_SEC)) / Double(NSEC_PER_SEC)) {
-      expectTimeWasted.fulfill()
-    }
-    //This just pumps the event loop.
-    waitForExpectations(timeout: 1.5, handler: nil)
+    machine.transition(to: .ready)
+    XCTAssertEqual(machine.state, .ready)
   }
 }

@@ -1,124 +1,224 @@
 import Foundation
+import Combine
 
 
 
 /**
- On Testing:
+ The “machine” part of our finite state machine.
  
- Often when testing, we'll want to assert that a state machine has made some transition. Because state machines should be private implementation details of their classes, and becasue state change happens asynchronously (or, at least, in the next cycle of the runloop), this can be difficult without sprinkling completion handlers throughout our code.
+ Given a `Transitionable` type `State`, this class holds its current value in the property `state` and manages transitions to new states by consulting `state`’s `shouldTransition(to:)` method.
  
- Instead, we can define the environment variable `GAUNTLET_POST_TEST_NOTIFICATIONS` in our testing scheme (any non-nil value will do), and subscribe to one or more of the following notification names:
+ ```
+ let stateMachine = StateMachine(initialState: MyState.ready)
+ stateMachine.transition(to: .working)
+ stateMachine.state // If `state.shouldTransition(to: .working)`
+                    // returns `true`, this will be `.working`.
+                    // Otherwise it will be `.ready`.
+ ```
  
- * `GauntletNotification.willTransition`
- * `GauntletNotification.didTransition`
+ This class also publishes state changes to subscribers via `publisher`:
  
- Both will post a `userInfo` with the following values:
+ ```
+ let stateMachine = StateMachine(initialState: MyState.ready)
+ stateMachine.publisher.sink { from, to in
+   // from == .ready, to == .working if
+   // ready -> working is a valid transition
+ }
+ stateMachine.transition(to: .working)
+ ```
  
- * `from`: The `StateType` the `StateMachine` did/will transition from.
- * `to`: The `StateType` the `StateMachine` did/will transition to.
+ ### Property Wrapper
+ `StateMachine` can also be used as a property wrapper, in which case the wrapped property’s type is the state type conforming to `Transitionable`, its default value is the initial state, its projected value is its `publisher`, and all assignment happens through `transition(to:)`. The above example could be written as:
+ 
+ ```
+ @StateMachine var stateMachine: MyState = .ready
+ $stateMachine.sink { from, to in
+   // from == .ready, to == .working if
+   // ready -> working is a valid transition
+ }
+ stateMachine = .working
+ ```
  */
+@propertyWrapper
 public class StateMachine<State> where State: Transitionable {
-  /**
-   Delegate tasks of `StateMachine`. Consumers can assign implementations to respond to lifecycle events.
-   */
-  public struct StateTransitionDelegates {
-    /**
-     Delegate closure that gets called whenever `StateMachine` successfully transitions from one state to another.
+  lazy private var _publisher = PassthroughSubject<(from: State, to: State), Never>()
 
-     - Note:
-         Why assign a closure for delegated functionality instead of the more standard “set a reference to a class that conforms to a delegate protocol”? Because it’s important the states passed to the delegate method have the same type as `State` (relative to the `StateMachine` class).
-     
-         To do this with a protocol is a bit of a mess because it involves associated types. This has gotten better with conditional conformance, but we still have to make it a top-level generic type, and that’s still ugly (it requrires we give a delegate type even if we don’t use one, it can’t infer the type if we don’t add the delegate as an initialization parameter, etc).
-     
-     - Warning:
-         Like all delegates, there's a high likelihood the delegatee owns the delegator and retain cycles are a danger. If the closure references the delegatee (even as `self`), it should be declared `weak` in a capture list. See [String Reference Cycles for Closures](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/AutomaticReferenceCounting.html#//apple_ref/doc/uid/TP40014097-CH20-ID56).
-     */
-    public var didTransition: ((_ from: State, _ to: State) -> Void)?
-  }
 
-  
-  /**
-   Consumers can assign implementations to protperties of `delegates` to respond to lifecycle events.
-   
-   - Note:
-       Why assign a closure for delegated functionality instead of the more standard “set a reference to a class that conforms to a delegate protocol”? Because it’s important the states passed to the delegate method have the same type as `State` (relative to the `StateMachine` class).
-       
-       To do this with a protocol is a bit of a mess because it involves associated types. This has gotten better with conditional conformance, but we still have to make it a top-level generic type, and that’s still ugly (it requrires we give a delegate type even if we don’t use one, it can’t infer the type if we don’t add the delegate as an initialization parameter, etc).
-   */
-  public var delegates = StateTransitionDelegates()
-  
-  
   /**
    The current state of the state machine. Read-only.
+   
+   To transition to another state, use `transition(to:)`
+   
+   ### Property Wrapper
+   When using `StateMachine` as a property wrapper, the wrapped property’s getter is equivalent to the `state` property:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   stateMachine.state //> .ready
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   stateMachine //> .ready
+   ```
+   
+   - SeeAlso: `transition(to:)`
    */
   public private(set) var state: State
 
 
   /**
-   Initializes the state machine with the given initial state.
+   Publishes state changes after valid transitions.
    
-   * note: This could very easily also take a(n optional) `didTransition` handler, saving us a common assignment that will almost always take place directly after instantiation. But I'm always forgetting whether `didTransition` is called when setting initial state or not. Keeping the assignment seperate makes the answer obvious.
+   Consumers can subscribe (in the `Combine` sense) to `publisher` to recieve a set of `State` values after ⃰ a valid transition:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   //...
+   let subscription = stateMachine.publisher.sink { from, to in
+     // stuff to do when `stateMachine` has transitioned
+     // to or from particular states...
+   }
+   ```
+   
+   - Attention:
+       “After”, in this case, means “on the *next* cycle of the run loop”. Subscribers will always be sent all the state changes in the order they were made. But if `state` is transitioned multiple times in *this* cycle of the run loop, `to:` may not represent the current value of `state` by the time it’s received.
+       
+       See the documentation for `transition(to:)` for more details and examples.
+       
+   ### Property Wrapper
+   When using `StateMachine` as a property wrapper, `publisher` is the wrapped property’s “projected value” — meaning we can access it by usign the `$` prefix. The above could be written as:
+   
+   ```
+   @StateMachine var stateMachine: MyState = .ready
+   //...
+   let subscription = $stateMachine.sink { from, to in
+     // stuff to do when `machine` has transitioned
+     // to or from particular states...
+   }
+   ```
+
+   - SeeAlso: `transition(to:)`
+   */
+  public var publisher: AnyPublisher<(from: State, to: State), Never> {
+    return _publisher.eraseToAnyPublisher()
+  }
+  
+  
+  /**
+   The value of the wrapped property when `StateMachine` is used as a property wrapper. Getting the value is equivalent to `state`. Setting the value is equivalent to calling `transition(to:)` with the new value.
+   
+   - SeeAlso: `state`, `transition(to:)`
+   */
+  public var wrappedValue: State {
+    get { state }
+    set { transition(to: newValue) }
+  }
+  
+  
+  /**
+   The projected value of the property (that is, the value when the property is prepended with a `$`) when `StateMachine` is used as a property wrapper.
+   
+   The projected value is equivalent to the `publisher` property:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   stateMachine.publisher.sink { ... }
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   $stateMachine.sink { ... }
+   ```
+   */
+  public var projectedValue: AnyPublisher<(from: State, to: State), Never> {
+    get { publisher }
+  }
+    
+  
+  /**
+   Initializes the state machine with the given initial state.
    */
   public init(initialState: State) {
-    state = initialState //set the internal value so we don't need a special rule in «shouldTranistionFrom(_,to:)». Also avoids calling «didTransition».
+    state = initialState //set the internal value so we don't need a special rule in `shouldTranistion(to:)`. Also avoids publishing the change to `publisher`.
+  }
+  
+  
+  /**
+   Initializer called when using `StateMachine` as a property wrapper.
+   
+   The default value of the property wrapper is made the “initial state” of the state machine:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   ```
+   */
+  convenience public init(wrappedValue: State) {
+    self.init(initialState: wrappedValue)
   }
   
   
   /**
    Use this method to transition states.
    
-   First, the validity of a transition to the given `state` is determined via a call to its `shouldTransitionFrom(_,to:)`. If it is valid, the machine tranisitons to it, calling `didTransition(from:to:)` once complete. If not, the given `state` is silently ignored.
+   When called, this method:
+   * First, determines the validity of the transition to the given `newState` via a call to `state.shouldTransition(to:)`.
+   * If it is valid, `newState` is *synchonously* assigned to the `state` property. Then the previous and new states are published *asynchronously* to subscribers of `publisher`.
+   * If the transition to `newState` is *not* valid, it is silently ignored and nothing is published.
    
    - Attention:
-       This method queues the state transition to happen on the next pass of the run loop. Thus, it's safe to call `queue(_)` from `didTransition(from:to:)` without concern for the stack. However, this also means that even calls to `queue(_)` with valid transition targets will not be reflected immediately in the state:
+       This method publishes to subscribers of `publisher` *asynchronously*. This is so we can call `transition(to:)` from within a the subscriber without concern for growing the stack.
+   
+       But this also means that, while subscribers of `publisher` will always be sent all state changes and always in the order they occured, if `state` (which is is transitioned *synchronously*) is set multiple times in a row, a subscriber’s parameters may not reflect the *current* state of the machine by the time it’s received:
    
        ```
-       let machine = StateMachine(initialState: State.ready)
-       machine.queue(State.fetch)
-       machine.state //> still `State.ready`
+       let stateMachine = StateMachine(initialState: MyState.first)
+       let sub = stateMachine.publisher.sink { from, to in
+         // On the first call...
+         print(to)                 //> .second
+         print(stateMachine.state) //> but `state` is already .third
+   
+         // Second call...
+         print(to)                 //> .third
+         print(stateMachine.state) //> also .third
+       }
+
+       stateMachine.transition(to: .second)
+                       // `state` is immediately set to `.second`,
+                       // but `(.first, .second)` won't be published
+                       // until the next runloop.
+       
+       stateMachine.trasition(to: .third)
+                       // Still in the current runloop; `state` is
+                       // is set to `.third`. We still won’t publish
+                       // `(.first, .second)` until the next runloop
+                       // and `(.second, .third)` right after that.
        ```
    
-   - Parameter state: The state to transition to.
+   - Parameter newState: The `State` to transition to.
+   
+   ### Property Wrapper
+   When using `StateMachine` as a property wrapper, the wrapped property’s setter is equivalent to calling `transition(to:)`:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   stateMachine.transition(to: .working)
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   stateMachine = .working
+   ```
+
+   - SeeAlso: `publisher`
    */
-  public func queue(_ state: State) {
-    OperationQueue.main.addOperation { [weak self] () -> Void in
-      self?.delegateTransition(to: state)
-    }
-  }
-  
-  
-  private func delegateTransition(to: State) {
-    if state.shouldTransition(to: to) {
+  public func transition(to newState: State) {
+    if state.shouldTransition(to: newState) {
       let from = state
-      postNotification(GauntletNotification.willTransition, from: from, to: to)
-      state = to
-      delegates.didTransition?(from, to)
-      postNotification(GauntletNotification.didTransition, from: from, to: to)
+      state = newState
+      OperationQueue.current?.addOperation { [weak self] () -> Void in
+        self?._publisher.send((from: from, to: newState))
+      }
     }
-  }
-}
-
-
-
-private extension StateMachine {
-  func postNotification(_ name: Notification.Name, from: State, to: State) {
-    guard Helper.isTestingEnvironmentDefined else {
-      return
-    }
-    NotificationCenter.default.post(name: name, object: self, userInfo: makeUserInfo(from: from, to: to))
-  }
-  
-  
-  private func makeUserInfo(from: State, to: State) -> [AnyHashable: Any] {
-    return ["from": from,
-            "to": to]
-  }
-}
-
-
-
-private enum Helper {
-  static var isTestingEnvironmentDefined: Bool {
-    return ProcessInfo.processInfo.environment["GAUNTLET_POST_TEST_NOTIFICATIONS"] != nil
   }
 }

@@ -4,12 +4,3 @@ author_url: https://figure.ink
 github_url: https://github.com/jemmons/Gauntlet
 root_url: https://jemmons.github.io/Gauntlet/
 module: Gauntlet
-
-custom_categories:
-  - name: Public Interface
-    children:
-    - Transitionable
-    - StateMachine
-  - name: Constants
-    children:
-    - GauntletNotification
