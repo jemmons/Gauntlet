@@ -29,32 +29,18 @@
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a href="Public Interface.html">Public Interface</a>
+            <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Protocols/Transitionable.html">Transitionable</a>
-              </li>
               <li class="nav-group-task">
                 <a href="Classes/StateMachine.html">StateMachine</a>
               </li>
-              <li class="nav-group-task">
-                <a href="Classes/StateMachine/StateTransitionDelegates.html">– StateTransitionDelegates</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="Constants.html">Constants</a>
+            <a href="Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Enums/GauntletNotification.html">GauntletNotification</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="Other Typealiases.html">Other Type Aliases</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="Other Typealiases.html#/s:8Gauntlet9StateTypea">StateType</a>
+                <a href="Protocols/Transitionable.html">Transitionable</a>
               </li>
             </ul>
           </li>
@@ -66,7 +52,7 @@
             
             <h1 id='gauntlet' class='heading'>Gauntlet</h1>
 
-<p><a href="https://github.com/Apple/swift-package-manager"><img src="https://img.shields.io/badge/SwiftPM-compatible-success" alt="SwiftPM compatible"></a> <a href="https://github.com/Carthage/Carthage"><img src="https://img.shields.io/badge/Carthage-compatible-success" alt="Carthage compatible"></a></p>
+<p><a href="https://github.com/Apple/swift-package-manager"><img src="https://img.shields.io/badge/SwiftPM-compatible-success" alt="SwiftPM compatible"></a> <a href="https://github.com/Carthage/Carthage"><img src="https://img.shields.io/badge/Carthage-compatible-success" alt="Carthage compatible"></a> <a href="https://jemmons.github.io/Gauntlet/Protocols/Transitionable.html"><img src="https://jemmons.github.io/Gauntlet/badge.svg" alt="Documentation"></a></p>
 
 <p>Gauntlet is a swift-friendly <a href="https://en.wikipedia.org/wiki/Finite-state_machine">state machine</a> focusing on simple configuration and light weight objects. It was originally inspired by <a href="http://www.figure.ink/blog/2015/1/31/swift-state-machines-part-1">a series of blog posts over on figure.ink</a>, but has evolved substantially since then.</p>
 <h2 id='simple-configuration' class='heading'>Simple Configuration</h2>
@@ -79,7 +65,9 @@
 
   <span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt">TrafficLight</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
     <span class="k">switch</span> <span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="o">.</span><span class="n">green</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="o">.</span><span class="n">yellow</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="o">.</span><span class="n">red</span><span class="p">):</span>
+    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="o">.</span><span class="n">green</span><span class="p">),</span> 
+         <span class="p">(</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="o">.</span><span class="n">yellow</span><span class="p">),</span> 
+         <span class="p">(</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="o">.</span><span class="n">red</span><span class="p">):</span>
       <span class="k">return</span> <span class="kc">true</span>
     <span class="k">default</span><span class="p">:</span>
       <span class="k">return</span> <span class="kc">false</span>
@@ -89,40 +77,71 @@
 </code></pre>
 <h2 id='light-weight-objects' class='heading'>Light Weight Objects</h2>
 
-<p>Gauntlet doesn&rsquo;t require you subclass your objects from some abstract root machine or manage class hierarchies of behavior. Instead, a simple light weight <code><a href="Classes/StateMachine.html">StateMachine</a></code> class is available for you to compose into any of your existing types. </p>
+<p>Gauntlet doesn&rsquo;t require you subclass your objects from some abstract root machine or manage class hierarchies of behavior. Instead, a simple light weight <code><a href="Classes/StateMachine.html">StateMachine</a></code> class is available for you to compose into your own types and behaviors. </p>
 
-<p>A <code><a href="Classes/StateMachine.html">StateMachine</a></code> gets created with a <code><a href="Protocols/Transitionable.html">Transitionable</a></code> type and an initial state. Queueing up state changes is a simple method call and a delegate handler can be assigned to respond to transitions. Once again, swift&rsquo;s <code>switch</code> is a good fit here:</p>
+<p>A <code><a href="Classes/StateMachine.html">StateMachine</a></code> gets created with a <code><a href="Protocols/Transitionable.html">Transitionable</a></code> type and an initial state. Transitioning states is a simple method call. A <code>Combine</code> publisher give subscribers the ability to react to transitions:</p>
 <pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">MyClass</span> <span class="p">{</span>
-  <span class="k">let</span> <span class="nv">machine</span><span class="p">:</span> <span class="kt">StateMachine</span><span class="o">&lt;</span><span class="kt">TrafficLight</span><span class="o">&gt;</span>
+  <span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">TrafficLight</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
+  <span class="k">let</span> <span class="nv">subscription</span><span class="p">:</span> <span class="kt">AnyCancellable</span>
 
   <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">machine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="o">.</span><span class="n">red</span><span class="p">)</span>
-    <span class="n">machine</span><span class="o">.</span><span class="n">delegates</span><span class="o">.</span><span class="n">didTransition</span> <span class="o">=</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+    <span class="n">subscription</span> <span class="o">=</span> <span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
       <span class="k">switch</span> <span class="n">to</span> <span class="p">{</span>
       <span class="k">case</span> <span class="o">.</span><span class="nv">red</span><span class="p">:</span>
         <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">stop</span><span class="p">()</span>
       <span class="k">case</span> <span class="o">.</span><span class="nv">yellow</span><span class="p">:</span>
-        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">caution</span><span class="p">()</span>
+        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">slow</span><span class="p">()</span>
       <span class="k">case</span> <span class="o">.</span><span class="nv">green</span><span class="p">:</span>
-        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">go</span><span class="p">()</span> 
+        <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">go</span><span class="p">()</span>
       <span class="p">}</span>
     <span class="p">}</span>
   <span class="p">}</span>
 
-  <span class="kd">func</span> <span class="nf">doThing</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="n">green</span><span class="p">)</span>
+
+  <span class="kd">func</span> <span class="nf">timerTriggerd</span><span class="p">(</span><span class="nv">light</span><span class="p">:</span> <span class="kt">TrafficLight</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">light</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<h2 id='property-wrapper' class='heading'>Property Wrapper</h2>
+
+<p>Becasue <code><a href="Classes/StateMachine.html">StateMachine</a></code> is so often used as a property, it can sometimes be more succinct to write it using property wrapper syntax. When used as a property wrapper:</p>
+
+<ul>
+<li>The type of the wrapped property is the state type conforming to <code><a href="Protocols/Transitionable.html">Transitionable</a></code>.</li>
+<li>The default value of the wrapped property is used as the initial state of the state machine.</li>
+<li>Values assigned to the wrapped property pass through <code>transition(to:)</code> and are ignored if they would result in an invalid transition.</li>
+<li>State changes are published to the “projected value” of the wrapped property — meaning we can access it by prefixing the wrapped property with a <code>$</code>.</li>
+</ul>
+
+<p>The example above could be rewritten as:</p>
+<pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">MyClass</span> <span class="p">{</span>
+  <span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">TrafficLight</span> <span class="o">=</span> <span class="o">.</span><span class="n">red</span>
+  <span class="k">let</span> <span class="nv">subscription</span><span class="p">:</span> <span class="kt">AnyCancellable</span>
+
+  <span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">subscription</span> <span class="o">=</span> <span class="err">$</span><span class="n">stateMachine</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">_</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+      <span class="c1">//...</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+
+  <span class="kd">func</span> <span class="nf">timerTriggerd</span><span class="p">(</span><span class="nv">light</span><span class="p">:</span> <span class="kt">TrafficLight</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">stateMachine</span> <span class="o">=</span> <span class="n">light</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 <h2 id='associating-values' class='heading'>Associating Values</h2>
 
-<p>Conforming to <code><a href="Protocols/Transitionable.html">Transitionable</a></code> with an <code>enum</code> allows us to associate values with a state:</p>
+<p>An oft overlooked advantage of conforming to <code><a href="Protocols/Transitionable.html">Transitionable</a></code> with an <code>enum</code> is it allows us to easily associate values with a state:</p>
 <pre class="highlight swift"><code><span class="kd">enum</span> <span class="kt">Connection</span><span class="p">:</span> <span class="kt">Transitionable</span> <span class="p">{</span>
   <span class="k">case</span> <span class="nf">fetch</span><span class="p">(</span><span class="kt">URLSessionTask</span><span class="p">),</span> <span class="nf">success</span><span class="p">([</span><span class="kt">AnyHashable</span><span class="p">:</span> <span class="kt">Any</span><span class="p">]),</span> <span class="nf">failure</span><span class="p">(</span><span class="kt">Error</span><span class="p">),</span> <span class="n">cancel</span>
 
   <span class="kd">func</span> <span class="nf">shouldTransition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="kt">Connection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
     <span class="k">switch</span> <span class="p">(</span><span class="k">self</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="n">fetching</span><span class="p">,</span> <span class="o">.</span><span class="n">success</span><span class="p">),</span> <span class="p">(</span><span class="o">.</span><span class="n">fetching</span><span class="p">,</span> <span class="o">.</span><span class="n">failure</span><span class="p">),</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">.</span><span class="n">cancel</span><span class="p">):</span>
+    <span class="k">case</span> <span class="p">(</span><span class="o">.</span><span class="n">fetch</span><span class="p">,</span> <span class="o">.</span><span class="n">success</span><span class="p">),</span> 
+         <span class="p">(</span><span class="o">.</span><span class="n">fetch</span><span class="p">,</span> <span class="o">.</span><span class="n">failure</span><span class="p">),</span> 
+         <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">.</span><span class="n">cancel</span><span class="p">):</span>
       <span class="k">return</span> <span class="kc">true</span>
     <span class="k">default</span><span class="p">:</span>
       <span class="k">return</span> <span class="kc">false</span>
@@ -135,18 +154,18 @@
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">connect</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">let</span> <span class="nv">task</span> <span class="o">=</span> <span class="nf">makeTask</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="n">myURL</span><span class="p">)</span> <span class="p">{</span> <span class="n">json</span><span class="p">,</span> <span class="n">error</span> <span class="k">in</span>
     <span class="k">guard</span> <span class="n">error</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="nf">faulure</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+      <span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="nf">faulure</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
       <span class="k">return</span>
     <span class="p">}</span>
-    <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">json</span><span class="p">))</span>
+    <span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="n">json</span><span class="p">))</span>
   <span class="p">}</span>
 
-  <span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="o">.</span><span class="nf">fetching</span><span class="p">(</span><span class="n">task</span><span class="p">))</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="nf">fetch</span><span class="p">(</span><span class="n">task</span><span class="p">))</span>
 <span class="p">}</span>
 </code></pre>
 
 <p>…And can be pulled out again when handling transitions:</p>
-<pre class="highlight swift"><code><span class="n">machine</span><span class="o">.</span><span class="n">delegates</span><span class="o">.</span><span class="n">didTransition</span> <span class="o">=</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+<pre class="highlight swift"><code><span class="n">subscription</span> <span class="o">=</span> <span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
   <span class="k">switch</span> <span class="p">(</span><span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">case</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">json</span><span class="p">)):</span>
     <span class="k">self</span><span class="p">?</span><span class="o">.</span><span class="nf">processJSON</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
@@ -159,15 +178,34 @@
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
+<h2 id='migrating-from-gauntlet-v4-x' class='heading'>Migrating from Gauntlet v4.x</h2>
+
+<p>Version 5 of Gauntlet presents a number of breaking changes.</p>
+
+<ul>
+<li><p><code>StateType</code> was deprecated last version. Now it’s dead. Use <code><a href="Protocols/Transitionable.html">Transitionable</a></code> instead.</p></li>
+<li><p>Delegates were always a bit wonky in Gauntlet and have been replaced with a <code>Combine</code> pub/sub model. The <code>delegates</code> property and its <code>didTransition</code> member have been removed. Subscribe to the <code>publisher</code> property (or the <code>$</code> projected value of a wrapped property) to get notified of state changes.  </p></li>
+<li><p><code>queue(_:)</code> has been renamed to <code>transition(to:)</code>. This is simple enough, but is indicative of a larger change… </p></li>
+<li><p>Timing is version 5 is subtlely different in significant ways. In version 4, state changes were queued onto the next cycle of the run loop. Then the state change and the (now obsolete) <code>didTransition</code> would run “together”. As a result, we could rely on the <code>state</code> property of the state machine and the <code>to</code> argument to <code>didTransition</code> to be in agreement.</p>
+
+<p>As of version 5, this has changd. Now state changes are applied to the state machine synchronously. But notification of these changes (via publication to the <code>publisher</code> property) still happens asynchronously (to allow for recursive transitions without overflowing the stack).</p>
+
+<p>As a result, the <code>state</code> of the machine is much more stable and less prone to timing-related edge cases. Yay! But we can no longer assume the <code>to</code> arguments of our subscriptions to <code>publisher</code> reflect the current <code>state</code> of the machine. Boo? </p>
+
+<p>Subscribers will always get all state changes and will always receive them in the order they were made, so in practice I&rsquo;m hoping this isn’t a big deal. But if you were relying on notifications of state change happening along side the actual change, itself, it’s time to revisit those assumptions.</p></li>
+<li><p>In version 4, becasue <code>state</code> was set asyncronously, it was surpassingly hard to test unless the transition happened to trigger some behavior observable to the test case. So Gauntlet provided <code>willTransition</code> and <code>didTransition</code> notifications that would fire if <code>GAUNTLET_POST_TEST_NOTIFICATIONS</code> was set in the environment.</p>
+
+<p>Now that transitions happen syncronously in version 5, these are no longer necessary and have been removed.</p></li>
+</ul>
 <h2 id='api' class='heading'>API</h2>
 
-<p>Full API documentation <a href="https://jemmons.github.io/Gauntlet/Protocols/Transitionable.html">can be found here</a>.</p>
+<p>Full API documentation <a href="https://jemmons.github.io/Gauntlet/Classes/StateMachine.html">can be found here</a>.</p>
 
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-08-08)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-11-04)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

@@ -30,32 +30,18 @@
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a href="../Public Interface.html">Public Interface</a>
+            <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Protocols/Transitionable.html">Transitionable</a>
-              </li>
               <li class="nav-group-task">
                 <a href="../Classes/StateMachine.html">StateMachine</a>
               </li>
-              <li class="nav-group-task">
-                <a href="../Classes/StateMachine/StateTransitionDelegates.html">– StateTransitionDelegates</a>
-              </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="../Constants.html">Constants</a>
+            <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Enums/GauntletNotification.html">GauntletNotification</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a href="../Other Typealiases.html">Other Type Aliases</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Other Typealiases.html#/s:8Gauntlet9StateTypea">StateType</a>
+                <a href="../Protocols/Transitionable.html">Transitionable</a>
               </li>
             </ul>
           </li>
@@ -67,138 +53,44 @@
             <h1>StateMachine</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">StateMachine</span><span class="o">&lt;</span><span class="kt">State</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">State</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/Transitionable.html">Transitionable</a></span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">@propertyWrapper</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">StateMachine</span><span class="o">&lt;</span><span class="kt">State</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">State</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/Transitionable.html">Transitionable</a></span></code></pre>
 
                 </div>
               </div>
-            <p>On Testing:</p>
+            <p>The “machine” part of our finite state machine.</p>
 
-<p>Often when testing, we&rsquo;ll want to assert that a state machine has made some transition. Because state machines should be private implementation details of their classes, and becasue state change happens asynchronously (or, at least, in the next cycle of the runloop), this can be difficult without sprinkling completion handlers throughout our code.</p>
+<p>Given a <code><a href="../Protocols/Transitionable.html">Transitionable</a></code> type <code>State</code>, this class holds its current value in the property <code>state</code> and manages transitions to new states by consulting <code>state</code>’s <code>shouldTransition(to:)</code> method.</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="n">working</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="n">state</span> <span class="c1">// If `state.shouldTransition(to: .working)`</span>
+                   <span class="c1">// returns `true`, this will be `.working`.</span>
+                   <span class="c1">// Otherwise it will be `.ready`.</span>
+</code></pre>
 
-<p>Instead, we can define the environment variable <code>GAUNTLET_POST_TEST_NOTIFICATIONS</code> in our testing scheme (any non-nil value will do), and subscribe to one or more of the following notification names:</p>
+<p>This class also publishes state changes to subscribers via <code>publisher</code>:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// from == .ready, to == .working if</span>
+  <span class="c1">// ready -&gt; working is a valid transition</span>
+<span class="p">}</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="n">working</span><span class="p">)</span>
+</code></pre>
+<h3 id='property-wrapper' class='heading'>Property Wrapper</h3>
 
-<ul>
-<li><code><a href="../Enums/GauntletNotification.html#/s:8Gauntlet0A12NotificationO14willTransitionSo18NSNotificationNameavpZ">GauntletNotification.willTransition</a></code></li>
-<li><code><a href="../Enums/GauntletNotification.html#/s:8Gauntlet0A12NotificationO13didTransitionSo18NSNotificationNameavpZ">GauntletNotification.didTransition</a></code></li>
-</ul>
-
-<p>Both will post a <code>userInfo</code> with the following values:</p>
-
-<ul>
-<li><code>from</code>: The <code><a href="../Other Typealiases.html#/s:8Gauntlet9StateTypea">StateType</a></code> the <code>StateMachine</code> did/will transition from.</li>
-<li><code>to</code>: The <code><a href="../Other Typealiases.html#/s:8Gauntlet9StateTypea">StateType</a></code> the <code>StateMachine</code> did/will transition to.</li>
-</ul>
+<p><code>StateMachine</code> can also be used as a property wrapper, in which case the wrapped property’s type is the state type conforming to <code><a href="../Protocols/Transitionable.html">Transitionable</a></code>, its default value is the initial state, its projected value is its <code>publisher</code>, and all assignment happens through <code>transition(to:)</code>. The above example could be written as:</p>
+<pre class="highlight swift"><code><span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">MyState</span> <span class="o">=</span> <span class="o">.</span><span class="n">ready</span>
+<span class="err">$</span><span class="n">stateMachine</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// from == .ready, to == .working if</span>
+  <span class="c1">// ready -&gt; working is a valid transition</span>
+<span class="p">}</span>
+<span class="n">stateMachine</span> <span class="o">=</span> <span class="o">.</span><span class="n">working</span>
+</code></pre>
 
           </section>
           <section class="section task-group-section">
             <div class="task-group">
               <ul>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8Gauntlet12StateMachineC0B19TransitionDelegatesV"></a>
-                    <a name="//apple_ref/swift/Struct/StateTransitionDelegates" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8Gauntlet12StateMachineC0B19TransitionDelegatesV">StateTransitionDelegates</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Delegate tasks of <code><a href="../Classes/StateMachine.html">StateMachine</a></code>. Consumers can assign implementations to respond to lifecycle events.</p>
-
-                        <a href="../Classes/StateMachine/StateTransitionDelegates.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">StateTransitionDelegates</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8Gauntlet12StateMachineC9publisherXevp"></a>
-                    <a name="//apple_ref/swift/Property/publisher" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8Gauntlet12StateMachineC9publisherXevp">publisher</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Publishes state changes after valid transitions.</p>
-
-<p>Consumers can subscribe (in the <code>Combine</code> sense) to <code>publisher</code> to recieve a set of <code>State</code> values immediately after every valid transition:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">machine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">State</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
-<span class="c1">//...</span>
-<span class="k">let</span> <span class="nv">subscription</span> <span class="o">=</span> <span class="n">machine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
-  <span class="c1">// stuff to do when `machine` has transitioned</span>
-  <span class="c1">// to or from particular states...</span>
-<span class="p">}</span>
-</code></pre>
-<div class="aside aside-note">
-    <p class="aside-title">Note</p>
-    <p>In systems that support it (iOS 13, macOS Catalina), this can be used as a replacement for the somewhat hackey practice of assigning a closure to <code>delegates.didTransition</code>.</p>
-
-<p>At some point in the future <code>Combine</code> will have a larger installed base, <code>publisher</code> will be the blessed way to respond to state changes, and the <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC9delegatesAC0B19TransitionDelegatesVyx_Gvp">delegates</a></code> property will be deprecated with extreme prejudice.</p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@available(iOS 13, OSX 10.15, *)</span>
-<span class="kd">public</span> <span class="k">var</span> <span class="nv">publisher</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="kt">State</span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="kt">State</span><span class="p">),</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:8Gauntlet12StateMachineC9delegatesAC0B19TransitionDelegatesVyx_Gvp"></a>
-                    <a name="//apple_ref/swift/Property/delegates" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8Gauntlet12StateMachineC9delegatesAC0B19TransitionDelegatesVyx_Gvp">delegates</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Consumers can assign implementations to protperties of <code>delegates</code> to respond to lifecycle events.</p>
-<div class="aside aside-note">
-    <p class="aside-title">Note</p>
-    <p>Why assign a closure for delegated functionality instead of the more standard “set a reference to a class that conforms to a delegate protocol”? Because it’s important the states passed to the delegate method have the same type as <code>State</code> (relative to the <code>StateMachine</code> class).</p>
-
-<p>To do this with a protocol is a bit of a mess because it involves associated types. This has gotten better with conditional conformance, but we still have to make it a top-level generic type, and that’s still ugly (it requrires we give a delegate type even if we don’t use one, it can’t infer the type if we don’t add the delegate as an initialization parameter, etc).</p>
-
-</div>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">delegates</span><span class="p">:</span> <span class="kt">StateMachine</span><span class="o">&lt;</span><span class="kt">State</span><span class="o">&gt;.</span><span class="kt"><a href="../Classes/StateMachine/StateTransitionDelegates.html">StateTransitionDelegates</a></span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
                 <li class="item">
                   <div>
                     <code>
@@ -214,14 +106,155 @@
                       <div class="abstract">
                         <p>The current state of the state machine. Read-only.</p>
 
+<p>To transition to another state, use <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC10transition2toyx_tF">transition(to:)</a></code></p>
+<h3 id='property-wrapper' class='heading'>Property Wrapper</h3>
+
+<p>When using <code>StateMachine</code> as a property wrapper, the wrapped property’s getter is equivalent to the <code>state</code> property:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="n">state</span> <span class="c1">//&gt; .ready</span>
+
+<span class="c1">// Is equivalent to:</span>
+<span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">MyState</span> <span class="o">=</span> <span class="o">.</span><span class="n">ready</span>
+<span class="n">stateMachine</span> <span class="c1">//&gt; .ready</span>
+</code></pre>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC10transition2toyx_tF">transition(to:)</a></code>
+
+</div>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">state</span><span class="p">:</span> <span class="kt">State</span> <span class="p">{</span>
-  <span class="k">get</span>
-  <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">state</span><span class="p">:</span> <span class="kt">State</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Gauntlet12StateMachineC9publisher7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp"></a>
+                    <a name="//apple_ref/swift/Property/publisher" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Gauntlet12StateMachineC9publisher7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp">publisher</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Publishes state changes after valid transitions.</p>
+
+<p>Consumers can subscribe (in the <code>Combine</code> sense) to <code>publisher</code> to recieve a set of <code>State</code> values after ⃰ a valid transition:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="c1">//...</span>
+<span class="k">let</span> <span class="nv">subscription</span> <span class="o">=</span> <span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// stuff to do when `stateMachine` has transitioned</span>
+  <span class="c1">// to or from particular states...</span>
+<span class="p">}</span>
+</code></pre>
+<div class="aside aside-attention">
+    <p class="aside-title">Attention</p>
+    <p>“After”, in this case, means “on the <em>next</em> cycle of the run loop”. Subscribers will always be sent all the state changes in the order they were made. But if <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code> is transitioned multiple times in <em>this</em> cycle of the run loop, <code>to:</code> may not represent the current value of <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code> by the time it’s received.</p>
+
+<p>See the documentation for <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC10transition2toyx_tF">transition(to:)</a></code> for more details and examples.</p>
+
+</div>
+<h3 id='property-wrapper' class='heading'>Property Wrapper</h3>
+
+<p>When using <code>StateMachine</code> as a property wrapper, <code>publisher</code> is the wrapped property’s “projected value” — meaning we can access it by usign the <code>$</code> prefix. The above could be written as:</p>
+<pre class="highlight swift"><code><span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">MyState</span> <span class="o">=</span> <span class="o">.</span><span class="n">ready</span>
+<span class="c1">//...</span>
+<span class="k">let</span> <span class="nv">subscription</span> <span class="o">=</span> <span class="err">$</span><span class="n">stateMachine</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// stuff to do when `machine` has transitioned</span>
+  <span class="c1">// to or from particular states...</span>
+<span class="p">}</span>
+</code></pre>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC10transition2toyx_tF">transition(to:)</a></code>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">publisher</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="kt">State</span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="kt">State</span><span class="p">),</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Gauntlet12StateMachineC12wrappedValuexvp"></a>
+                    <a name="//apple_ref/swift/Property/wrappedValue" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Gauntlet12StateMachineC12wrappedValuexvp">wrappedValue</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The value of the wrapped property when <code>StateMachine</code> is used as a property wrapper. Getting the value is equivalent to <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code>. Setting the value is equivalent to calling <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC10transition2toyx_tF">transition(to:)</a></code> with the new value.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code>, <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC10transition2toyx_tF">transition(to:)</a></code>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">wrappedValue</span><span class="p">:</span> <span class="kt">State</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Gauntlet12StateMachineC14projectedValue7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp"></a>
+                    <a name="//apple_ref/swift/Property/projectedValue" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Gauntlet12StateMachineC14projectedValue7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp">projectedValue</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The projected value of the property (that is, the value when the property is prepended with a <code>$</code>) when <code>StateMachine</code> is used as a property wrapper.</p>
+
+<p>The projected value is equivalent to the <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC9publisher7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp">publisher</a></code> property:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+
+<span class="c1">// Is equivalent to:</span>
+<span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">MyState</span> <span class="o">=</span> <span class="o">.</span><span class="n">ready</span>
+<span class="err">$</span><span class="n">stateMachine</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">projectedValue</span><span class="p">:</span> <span class="kt">AnyPublisher</span><span class="o">&lt;</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="kt">State</span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="kt">State</span><span class="p">),</span> <span class="kt">Never</span><span class="o">&gt;</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -242,11 +275,6 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Initializes the state machine with the given initial state.</p>
-<div class="aside aside-note">
-    <p class="aside-title">Note</p>
-    This could very easily also take a(n optional) <code>didTransition</code> handler, saving us a common assignment that will almost always take place directly after instantiation. But I&rsquo;m always forgetting whether <code>didTransition</code> is called when setting initial state or not. Keeping the assignment seperate makes the answer obvious.
-
-</div>
 
                       </div>
                       <div class="declaration">
@@ -263,9 +291,43 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:8Gauntlet12StateMachineC5queueyyxF"></a>
-                    <a name="//apple_ref/swift/Method/queue(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:8Gauntlet12StateMachineC5queueyyxF">queue(_:)</a>
+                    <a name="/s:8Gauntlet12StateMachineC12wrappedValueACyxGx_tcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(wrappedValue:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Gauntlet12StateMachineC12wrappedValueACyxGx_tcfc">init(wrappedValue:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializer called when using <code>StateMachine</code> as a property wrapper.</p>
+
+<p>The default value of the property wrapper is made the “initial state” of the state machine:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+
+<span class="c1">// Is equivalent to:</span>
+<span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">MyState</span> <span class="o">=</span> <span class="o">.</span><span class="n">ready</span>
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">convenience</span> <span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">wrappedValue</span><span class="p">:</span> <span class="kt">State</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Gauntlet12StateMachineC10transition2toyx_tF"></a>
+                    <a name="//apple_ref/swift/Method/transition(to:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Gauntlet12StateMachineC10transition2toyx_tF">transition(to:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -275,14 +337,52 @@
                       <div class="abstract">
                         <p>Use this method to transition states.</p>
 
-<p>First, the validity of a transition to the given <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code> is determined via a call to its <code>shouldTransitionFrom(_,to:)</code>. If it is valid, the machine tranisitons to it, calling <code>didTransition(from:to:)</code> once complete. If not, the given <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code> is silently ignored.</p>
+<p>When called, this method:</p>
+<li>First, determines the validity of the transition to the given <code>newState</code> via a call to <code>state.shouldTransition(to:)</code>.</li>
+<li>If it is valid, <code>newState</code> is <em>synchonously</em> assigned to the <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code> property. Then the previous and new states are published <em>asynchronously</em> to subscribers of <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC9publisher7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp">publisher</a></code>.</li>
+<li><p>If the transition to <code>newState</code> is <em>not</em> valid, it is silently ignored and nothing is published.</p></li>
 <div class="aside aside-attention">
     <p class="aside-title">Attention</p>
-    <p>This method queues the state transition to happen on the next pass of the run loop. Thus, it&rsquo;s safe to call <code>queue(_)</code> from <code>didTransition(from:to:)</code> without concern for the stack. However, this also means that even calls to <code>queue(_)</code> with valid transition targets will not be reflected immediately in the state:</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">machine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">State</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
-<span class="n">machine</span><span class="o">.</span><span class="nf">queue</span><span class="p">(</span><span class="kt">State</span><span class="o">.</span><span class="n">fetch</span><span class="p">)</span>
-<span class="n">machine</span><span class="o">.</span><span class="n">state</span> <span class="c1">//&gt; still `State.ready`</span>
+    <p>This method publishes to subscribers of <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC9publisher7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp">publisher</a></code> <em>asynchronously</em>. This is so we can call <code>transition(to:)</code> from within a the subscriber without concern for growing the stack.</p>
+
+<p>But this also means that, while subscribers of <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC9publisher7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp">publisher</a></code> will always be sent all state changes and always in the order they occured, if <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC5statexvp">state</a></code> (which is is transitioned <em>synchronously</em>) is set multiple times in a row, a subscriber’s parameters may not reflect the <em>current</em> state of the machine by the time it’s received:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">sub</span> <span class="o">=</span> <span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// On the first call...</span>
+  <span class="nf">print</span><span class="p">(</span><span class="n">to</span><span class="p">)</span>                 <span class="c1">//&gt; .second</span>
+  <span class="nf">print</span><span class="p">(</span><span class="n">stateMachine</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="c1">//&gt; but `state` is already .third</span>
+
+  <span class="c1">// Second call...</span>
+  <span class="nf">print</span><span class="p">(</span><span class="n">to</span><span class="p">)</span>                 <span class="c1">//&gt; .third</span>
+  <span class="nf">print</span><span class="p">(</span><span class="n">stateMachine</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="c1">//&gt; also .third</span>
+<span class="p">}</span>
+
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="n">second</span><span class="p">)</span>
+                <span class="c1">// `state` is immediately set to `.second`,</span>
+                <span class="c1">// but `(.first, .second)` won't be published</span>
+                <span class="c1">// until the next runloop.</span>
+
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">trasition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="n">third</span><span class="p">)</span>
+                <span class="c1">// Still in the current runloop; `state` is</span>
+                <span class="c1">// is set to `.third`. We still won’t publish</span>
+                <span class="c1">// `(.first, .second)` until the next runloop</span>
+                <span class="c1">// and `(.second, .third)` right after that.</span>
 </code></pre>
+
+</div>
+<h3 id='property-wrapper' class='heading'>Property Wrapper</h3>
+
+<p>When using <code>StateMachine</code> as a property wrapper, the wrapped property’s setter is equivalent to calling <code>transition(to:)</code>:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="n">working</span><span class="p">)</span>
+
+<span class="c1">// Is equivalent to:</span>
+<span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">MyState</span> <span class="o">=</span> <span class="o">.</span><span class="n">ready</span>
+<span class="n">stateMachine</span> <span class="o">=</span> <span class="o">.</span><span class="n">working</span>
+</code></pre>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Classes/StateMachine.html#/s:8Gauntlet12StateMachineC9publisher7Combine12AnyPublisherVyx4from_x2tots5NeverOGvp">publisher</a></code>
 
 </div>
 
@@ -291,7 +391,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">queue</span><span class="p">(</span><span class="n">_</span> <span class="nv">state</span><span class="p">:</span> <span class="kt">State</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">transition</span><span class="p">(</span><span class="n">to</span> <span class="nv">newState</span><span class="p">:</span> <span class="kt">State</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -302,12 +402,12 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>state</em>
+                                <em>newState</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The state to transition to.</p>
+                                  <p>The <code>State</code> to transition to.</p>
                                 </div>
                               </td>
                             </tr>
@@ -322,8 +422,8 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-08-08)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-11-04)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>

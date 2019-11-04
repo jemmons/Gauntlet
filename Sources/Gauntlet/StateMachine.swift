@@ -4,16 +4,19 @@ import Combine
 
 
 /**
- The “machine” part of our finite state machine. Given a `Transitionable` type `State`, this class holds the current state value and manages transitions between them by consulting `State`’s `shouldTransition(to:)` method.
+ The “machine” part of our finite state machine.
+ 
+ Given a `Transitionable` type `State`, this class holds its current value in the property `state` and manages transitions to new states by consulting `state`’s `shouldTransition(to:)` method.
  
  ```
  let stateMachine = StateMachine(initialState: MyState.ready)
  stateMachine.transition(to: .working)
- stateMachine.state // "working" if ready->working is a
-                    // valid transition; otherwise "ready"
+ stateMachine.state // If `state.shouldTransition(to: .working)`
+                    // returns `true`, this will be `.working`.
+                    // Otherwise it will be `.ready`.
  ```
  
- It will also publish state changes to subscribers via `publisher`:
+ This class also publishes state changes to subscribers via `publisher`:
  
  ```
  let stateMachine = StateMachine(initialState: MyState.ready)
@@ -25,7 +28,7 @@ import Combine
  ```
  
  ### Property Wrapper
- `StateMachine` can also be used as a property wrapper, in which case its default vaule is used as its initial state, its projected value is its `publisher`, and all assignment happens through `transition(to:)`. The above example could be written as:
+ `StateMachine` can also be used as a property wrapper, in which case the wrapped property’s type is the state type conforming to `Transitionable`, its default value is the initial state, its projected value is its `publisher`, and all assignment happens through `transition(to:)`. The above example could be written as:
  
  ```
  @StateMachine var stateMachine: MyState = .ready
@@ -43,6 +46,22 @@ public class StateMachine<State> where State: Transitionable {
 
   /**
    The current state of the state machine. Read-only.
+   
+   To transition to another state, use `transition(to:)`
+   
+   ### Property Wrapper
+   When using `StateMachine` as a property wrapper, the wrapped property’s getter is equivalent to the `state` property:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   stateMachine.state //> .ready
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   stateMachine //> .ready
+   ```
+   
+   - SeeAlso: `transition(to:)`
    */
   public private(set) var state: State
 
@@ -53,10 +72,10 @@ public class StateMachine<State> where State: Transitionable {
    Consumers can subscribe (in the `Combine` sense) to `publisher` to recieve a set of `State` values after ⃰ a valid transition:
    
    ```
-   let machine = StateMachine(initialState: State.ready)
+   let stateMachine = StateMachine(initialState: MyState.ready)
    //...
-   let subscription = machine.publisher.sink { from, to in
-     // stuff to do when `machine` has transitioned
+   let subscription = stateMachine.publisher.sink { from, to in
+     // stuff to do when `stateMachine` has transitioned
      // to or from particular states...
    }
    ```
@@ -66,16 +85,19 @@ public class StateMachine<State> where State: Transitionable {
        
        See the documentation for `transition(to:)` for more details and examples.
        
-   - SeeAlso: `transition(to:)`
-   
    ### Property Wrapper
-   When using `StateMachine` as a property wrapper, this is its “projected value” — meaning we can access it by usign the `$` prefix:
+   When using `StateMachine` as a property wrapper, `publisher` is the wrapped property’s “projected value” — meaning we can access it by usign the `$` prefix. The above could be written as:
    
    ```
-   @StateMachine var state: MyState = .ready
+   @StateMachine var stateMachine: MyState = .ready
    //...
-   let subscription = $state.sink { /*...*/ }
+   let subscription = $stateMachine.sink { from, to in
+     // stuff to do when `machine` has transitioned
+     // to or from particular states...
+   }
    ```
+
+   - SeeAlso: `transition(to:)`
    */
   public var publisher: AnyPublisher<(from: State, to: State), Never> {
     return _publisher.eraseToAnyPublisher()
@@ -83,7 +105,9 @@ public class StateMachine<State> where State: Transitionable {
   
   
   /**
-   Equivalent to `state` property.
+   The value of the wrapped property when `StateMachine` is used as a property wrapper. Getting the value is equivalent to `state`. Setting the value is equivalent to calling `transition(to:)` with the new value.
+   
+   - SeeAlso: `state`, `transition(to:)`
    */
   public var wrappedValue: State {
     get { state }
@@ -92,7 +116,18 @@ public class StateMachine<State> where State: Transitionable {
   
   
   /**
-   Equivalent to `publisher` property.
+   The projected value of the property (that is, the value when the property is prepended with a `$`) when `StateMachine` is used as a property wrapper.
+   
+   The projected value is equivalent to the `publisher` property:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   stateMachine.publisher.sink { ... }
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   $stateMachine.sink { ... }
+   ```
    */
   public var projectedValue: AnyPublisher<(from: State, to: State), Never> {
     get { publisher }
@@ -108,7 +143,16 @@ public class StateMachine<State> where State: Transitionable {
   
   
   /**
-   The default value of the property wrapper is made the “initial state” of the state machine.
+   Initializer called when using `StateMachine` as a property wrapper.
+   
+   The default value of the property wrapper is made the “initial state” of the state machine:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   ```
    */
   convenience public init(wrappedValue: State) {
     self.init(initialState: wrappedValue)
@@ -118,16 +162,15 @@ public class StateMachine<State> where State: Transitionable {
   /**
    Use this method to transition states.
    
-   First, the validity of a transition to the given `state` is determined via a call to its `shouldTransition(to:)`.
-   
-   If it is valid, the machine tranisitons to it and publishes the previous and new state via `publisher`.
-   
-   If transition to the given `state` *not* valid, it is silently ignored.
+   When called, this method:
+   * First, determines the validity of the transition to the given `newState` via a call to `state.shouldTransition(to:)`.
+   * If it is valid, `newState` is *synchonously* assigned to the `state` property. Then the previous and new states are published *asynchronously* to subscribers of `publisher`.
+   * If the transition to `newState` is *not* valid, it is silently ignored and nothing is published.
    
    - Attention:
-       This method publishes to `publisher` on the *next* cycle of the run loop. This is so we can call `transition(to:)` from within a subscriber of `publisher` without concern for growing the stack.
+       This method publishes to subscribers of `publisher` *asynchronously*. This is so we can call `transition(to:)` from within a the subscriber without concern for growing the stack.
    
-       But this also means that, while subscribers of `publisher` will always be sent all state changes and in the order they occured, if `state` is transitioned multiple times in *this* cycle of the run loop, `to:` may not represent the current value of `state` by the time it’s received:
+       But this also means that, while subscribers of `publisher` will always be sent all state changes and always in the order they occured, if `state` (which is is transitioned *synchronously*) is set multiple times in a row, a subscriber’s parameters may not reflect the *current* state of the machine by the time it’s received:
    
        ```
        let stateMachine = StateMachine(initialState: MyState.first)
@@ -153,16 +196,28 @@ public class StateMachine<State> where State: Transitionable {
                        // and `(.second, .third)` right after that.
        ```
    
-   - Parameter to: The `State` to transition to.
+   - Parameter newState: The `State` to transition to.
    
+   ### Property Wrapper
+   When using `StateMachine` as a property wrapper, the wrapped property’s setter is equivalent to calling `transition(to:)`:
+   
+   ```
+   let stateMachine = StateMachine(initialState: MyState.ready)
+   stateMachine.transition(to: .working)
+   
+   // Is equivalent to:
+   @StateMachine var stateMachine: MyState = .ready
+   stateMachine = .working
+   ```
+
    - SeeAlso: `publisher`
    */
-  public func transition(to: State) {
-    if state.shouldTransition(to: to) {
+  public func transition(to newState: State) {
+    if state.shouldTransition(to: newState) {
       let from = state
-      state = to
+      state = newState
       OperationQueue.current?.addOperation { [weak self] () -> Void in
-        self?._publisher.send((from: from, to: to))
+        self?._publisher.send((from: from, to: newState))
       }
     }
   }

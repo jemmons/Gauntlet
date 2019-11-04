@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Classes  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Section/Classes" class="dashAnchor"></a>
+    <a title="Classes  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">Gauntlet Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/jemmons/Gauntlet"><img src="img/gh.png"/>View on GitHub</a></p>
+        <p class="header-right"><a href="dash-feed://https%3A%2F%2Fjemmons%2Egithub%2Eio%2FGauntlet%2Fdocsets%2FGauntlet%2Exml"><img src="img/dash.png"/>Install in Dash</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">Gauntlet Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Classes  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/StateMachine.html">StateMachine</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/Transitionable.html">Transitionable</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Classes</h1>
+            <p>The following classes are available globally.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:8Gauntlet12StateMachineC"></a>
+                    <a name="//apple_ref/swift/Class/StateMachine" class="dashAnchor"></a>
+                    <a class="token" href="#/s:8Gauntlet12StateMachineC">StateMachine</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The “machine” part of our finite state machine.</p>
+
+<p>Given a <code><a href="Protocols/Transitionable.html">Transitionable</a></code> type <code>State</code>, this class holds its current value in the property <code>state</code> and manages transitions to new states by consulting <code>state</code>’s <code>shouldTransition(to:)</code> method.</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="n">working</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="n">state</span> <span class="c1">// If `state.shouldTransition(to: .working)`</span>
+                   <span class="c1">// returns `true`, this will be `.working`.</span>
+                   <span class="c1">// Otherwise it will be `.ready`.</span>
+</code></pre>
+
+<p>This class also publishes state changes to subscribers via <code>publisher</code>:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">MyState</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// from == .ready, to == .working if</span>
+  <span class="c1">// ready -&gt; working is a valid transition</span>
+<span class="p">}</span>
+<span class="n">stateMachine</span><span class="o">.</span><span class="nf">transition</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="o">.</span><span class="n">working</span><span class="p">)</span>
+</code></pre>
+<h3 id='property-wrapper' class='heading'>Property Wrapper</h3>
+
+<p><code>StateMachine</code> can also be used as a property wrapper, in which case the wrapped property’s type is the state type conforming to <code><a href="Protocols/Transitionable.html">Transitionable</a></code>, its default value is the initial state, its projected value is its <code>publisher</code>, and all assignment happens through <code>transition(to:)</code>. The above example could be written as:</p>
+<pre class="highlight swift"><code><span class="kd">@StateMachine</span> <span class="k">var</span> <span class="nv">stateMachine</span><span class="p">:</span> <span class="kt">MyState</span> <span class="o">=</span> <span class="o">.</span><span class="n">ready</span>
+<span class="err">$</span><span class="n">stateMachine</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
+  <span class="c1">// from == .ready, to == .working if</span>
+  <span class="c1">// ready -&gt; working is a valid transition</span>
+<span class="p">}</span>
+<span class="n">stateMachine</span> <span class="o">=</span> <span class="o">.</span><span class="n">working</span>
+</code></pre>
+
+                        <a href="Classes/StateMachine.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@propertyWrapper</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">StateMachine</span><span class="o">&lt;</span><span class="kt">State</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">State</span> <span class="p">:</span> <span class="kt"><a href="Protocols/Transitionable.html">Transitionable</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-11-04)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
