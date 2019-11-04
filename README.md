@@ -159,13 +159,13 @@ Version 5 of Gauntlet presents a number of breaking changes.
 
 * Timing is version 5 is subtlely different in significant ways. In version 4, state changes were queued onto the next cycle of the run loop. Then the state change and the (now obsolete) `didTransition` would run “together”. As a result, we could rely on the `state` property of the state machine and the `to` argument to `didTransition` to be in agreement.
     
-    As of version 5, this has changd. Now state changes are applied to the state machine synchronously. But notification of these changes (via publication to the `publisher` property) still happens asynchronously (to allow for recursive transitions without overflowing the stack).
+    As of version 5, this has changed. Now state changes are applied to the state machine synchronously. But notification of these changes (via publication to the `publisher` property) still happens asynchronously (to allow for recursive transitions without overflowing the stack).
     
     As a result, the `state` of the machine is much more stable and less prone to timing-related edge cases. Yay! But we can no longer assume the `to` arguments of our subscriptions to `publisher` reflect the current `state` of the machine. Boo? 
     
     Subscribers will always get all state changes and will always receive them in the order they were made, so in practice I'm hoping this isn’t a big deal. But if you were relying on notifications of state change happening along side the actual change itself, it’s time to revisit those assumptions.
 
-* In version 4, becasue `state` was set asyncronously, it was surpassingly hard to test unless the transition happened to trigger some behavior observable to the test case. So Gauntlet provided `willTransition` and `didTransition` notifications that would fire if `GAUNTLET_POST_TEST_NOTIFICATIONS` was set in the environment.
+* In version 4, because `state` was set asyncronously, it was surpassingly hard to test unless the transition happened to trigger some behavior observable to the test case. So Gauntlet provided `willTransition` and `didTransition` notifications that would fire if `GAUNTLET_POST_TEST_NOTIFICATIONS` was set in the environment.
     
     Now that transitions happen syncronously in version 5, these are no longer necessary and have been removed.
 
