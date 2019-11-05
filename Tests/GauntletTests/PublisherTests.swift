@@ -1,16 +1,17 @@
 import XCTest
-import Gauntlet
 import Combine
+import Gauntlet
 
 
 
 class PublisherTests: XCTestCase {
-  var machine = StateMachine(initialState: MyState.ready)
+  let machine = StateMachine(initialState: MyState.ready)
+  var subscription: AnyCancellable?
   
   
   func testValidTransition(){
     let expectWorking = expectation(description: "Completed Transition")
-    let sub = machine.publisher.sink { from, to in
+    subscription = machine.publisher.sink { from, to in
       if case (.ready, .working) = (from, to) {
         XCTAssertEqual(self.machine.state, .working)
         expectWorking.fulfill()
@@ -27,7 +28,7 @@ class PublisherTests: XCTestCase {
     let toWorking = expectation(description: "Waiting to transition to working.")
     let expectQueued = expectation(description: "Queued Expectation")
     
-    let sub = machine.publisher.sink { transition in
+    subscription = machine.publisher.sink { transition in
       if case (.ready, .working) = transition {
         toWorking.fulfill()
       }
@@ -48,7 +49,7 @@ class PublisherTests: XCTestCase {
   func testInvalidTransition(){
     let expectQueued = expectation(description: "Queued Expectation")
     
-    let sub = machine.publisher.sink { from, to in
+    subscription = machine.publisher.sink { from, to in
       XCTFail("Handler for invalid transition should not have been called.")
     }
     machine.transition(to: .success("foo"))
@@ -64,7 +65,7 @@ class PublisherTests: XCTestCase {
   func testValidSelfTransition(){
     let selfTransition = expectation(description: "Transition Complete")
     
-    let sub = machine.publisher.sink { transition in
+    subscription = machine.publisher.sink { transition in
       if case (.ready, .ready) = transition {
         XCTAssertEqual(self.machine.state, .ready)
         selfTransition.fulfill()
@@ -80,7 +81,7 @@ class PublisherTests: XCTestCase {
     let expectWorking = expectation(description: "Transition Complete")
     let expectQueued = expectation(description: "Queued Expectation")
     
-    let sub = machine.publisher.sink { transition in
+    subscription = machine.publisher.sink { transition in
       switch transition {
       case (.ready, .working):
         expectWorking.fulfill()
@@ -105,7 +106,7 @@ class PublisherTests: XCTestCase {
     let expectSuccess = expectation(description: "Trasition to success.")
     var inWorking = false
     
-    let sub = machine.publisher.sink { _, to in
+    subscription = machine.publisher.sink { _, to in
       switch to {
       case .working:
         inWorking = true
@@ -128,7 +129,7 @@ class PublisherTests: XCTestCase {
   
   func testNilSelf() {
     var subject:StateMachine? = StateMachine(initialState: MyState.ready)
-    let sub = subject!.publisher.sink { _ in
+    subscription = subject!.publisher.sink { _ in
       XCTFail("Should never be called.")
     }
     subject!.transition(to: .working)
@@ -145,7 +146,7 @@ class PublisherTests: XCTestCase {
   
   func testTransitionDelay(){
     let transitionToWorking = expectation(description: "Completed transition to working.")
-    let sub = machine.publisher.sink { transition in
+    subscription = machine.publisher.sink { transition in
       if case (.ready, .working) = transition {
         XCTAssertEqual(self.machine.state, .working)
         transitionToWorking.fulfill()
@@ -163,7 +164,7 @@ class PublisherTests: XCTestCase {
     let toSuccess = expectation(description: "Transitioned to success.")
     let toReady = expectation(description: "Transitioned to ready.")
 
-    let sub = machine.publisher.sink { [weak self] transition in
+    subscription = machine.publisher.sink { [weak self] transition in
       switch transition {
       case (.ready, .working):
         XCTAssertEqual(.ready, self!.machine.state, "assignments have already happened")

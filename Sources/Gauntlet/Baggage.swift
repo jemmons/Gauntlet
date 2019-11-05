@@ -37,7 +37,7 @@ public extension StateMachine {
    - Warning: Obsolete. Use `trasition(to:)` instead.
   */
   @available(*, unavailable, renamed: "transition(to:)")
-  public func queue(_ state: State) {}
+  func queue(_ state: State) {}
 }
 
 
