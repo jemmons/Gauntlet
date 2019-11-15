@@ -1,14 +1,17 @@
-name: Swift
+name: Swift Package Test
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build:
-
+  build_and_test:
+    name: Build and Test
     runs-on: macOS-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      run: | 
+        git fetch
+        git checkout $GITHUB_SHA
     - name: Build
       run: swift build -v
     - name: Run tests
