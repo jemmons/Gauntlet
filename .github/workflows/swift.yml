@@ -1,4 +1,4 @@
-name: Swift Package Test
+name: Swift Package Test/Coverage
 
 on: [push, pull_request]
 
@@ -10,7 +10,17 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+    - name: Fetch CodeClimate Test Reporter
+      run: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-darwin-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+    - name: Generate Project
+      run: swift package generate-xcodeproj --enable-code-coverage
+    - name: Test Reporter Before 
+      run: ./cc-test-reporter before-build
+    - name: Build Tests
+      run: xcodebuild test -scheme Gauntlet-Package -resultBundleVersion 3 -resultBundlePath ./build.xcresult
+    - name: Parse Coverage
+      run: xcrun xccov view --report --json ./build.xcresult > coverage.json
+    - name: Test Reporter After
+      run: ./cc-test-reporter after-build -t xccov -r ${{ secrets.CODECLIMATE_TOKEN }}
