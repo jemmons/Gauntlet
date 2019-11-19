@@ -9,6 +9,7 @@ import Foundation
 public typealias StateType = Transitionable
 
 
+
 public extension StateMachine {
   /**
    - Warning: Obsolete. Subscribe to `publisher` instead.
@@ -22,14 +23,14 @@ public extension StateMachine {
     public var didTransition: ((_ from: State, _ to: State) -> Void)?
   }
 
-  
+
   /**
    - Warning: Obsolete. Subscribe to `publisher` instead.
    */
   @available(*, unavailable, message: "Subscribe to `publisher` instead.")
   var delegates: StateTransitionDelegates {
     get { StateTransitionDelegates() }
-    set { }
+    set { _ = newValue }
   }
 
 
@@ -60,4 +61,3 @@ public enum GauntletNotification {
   @available(*, unavailable, message: "States are now assigned syncronously in the current run loop. Debug notifications are no longer needed.")
   public static let didTransition = Notification.Name(rawValue: "GauntletDidTransitionNotification")
 }
-

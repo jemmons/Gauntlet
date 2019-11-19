@@ -130,7 +130,7 @@ public class StateMachine<State> where State: Transitionable {
    ```
    */
   public var projectedValue: AnyPublisher<(from: State, to: State), Never> {
-    get { publisher }
+    publisher
   }
     
   
@@ -138,7 +138,7 @@ public class StateMachine<State> where State: Transitionable {
    Initializes the state machine with the given initial state.
    */
   public init(initialState: State) {
-    state = initialState //set the internal value so we don't need a special rule in `shouldTranistion(to:)`. Also avoids publishing the change to `publisher`.
+    state = initialState // set the internal value so we don't need a special rule in `shouldTranistion(to:)`. Also avoids publishing the change to `publisher`.
   }
   
   

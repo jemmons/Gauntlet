@@ -5,6 +5,11 @@
       "enabled": false
     }
   },
+  "plugins": {
+    "swiftlint": {
+      "enabled": true
+    }
+  },
   "exclude_patterns": [
     "docs/",
     "Tests/"
