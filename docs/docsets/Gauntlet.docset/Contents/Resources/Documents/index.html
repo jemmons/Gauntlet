@@ -52,9 +52,22 @@
             
             <h1 id='gauntlet' class='heading'>Gauntlet</h1>
 
-<p><a href="https://github.com/Apple/swift-package-manager"><img src="https://img.shields.io/badge/SwiftPM-compatible-success" alt="SwiftPM compatible"></a> <a href="https://github.com/Carthage/Carthage"><img src="https://img.shields.io/badge/Carthage-compatible-success" alt="Carthage compatible"></a> <a href="https://jemmons.github.io/Gauntlet/Protocols/Transitionable.html"><img src="https://jemmons.github.io/Gauntlet/badge.svg" alt="Documentation"></a></p>
+<p><a href="https://github.com/Apple/swift-package-manager"><img src="https://img.shields.io/badge/SwiftPM-compatible-success" alt="SwiftPM compatible"></a> <a href="https://jemmons.github.io/Gauntlet/Protocols/Transitionable.html"><img src="https://jemmons.github.io/Gauntlet/badge.svg" alt="Documentation"></a>
+<a href="https://codeclimate.com/github/jemmons/Gauntlet/maintainability"><img src="https://api.codeclimate.com/v1/badges/71411cade9c7dd7d9c9c/maintainability" alt="Maintainability"></a><a href="https://codeclimate.com/github/jemmons/Gauntlet/test_coverage"><img src="https://api.codeclimate.com/v1/badges/71411cade9c7dd7d9c9c/test_coverage" alt="Test Coverage"></a></p>
 
 <p>Gauntlet is a swift-friendly <a href="https://en.wikipedia.org/wiki/Finite-state_machine">state machine</a> focusing on simple configuration and light weight objects. It was originally inspired by <a href="http://www.figure.ink/blog/2015/1/31/swift-state-machines-part-1">a series of blog posts over on figure.ink</a>, but has evolved substantially since then.</p>
+<h2 id='table-of-contents' class='heading'>Table of Contents</h2>
+
+<ul>
+<li><a href="#simple-configuration">Simple Configuration</a></li>
+<li><a href="#light-weight-objects">Light Weight Objects</a></li>
+<li><a href="#property-wrapper">Property Wrapper</a></li>
+<li><a href="#associating-values">Associating Values</a></li>
+<li><a href="#migrating-from-gauntlet-v4x">Migrating from Gauntlet v4</a></li>
+<li><a href="#api">API</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#license">License</a></li>
+</ul>
 <h2 id='simple-configuration' class='heading'>Simple Configuration</h2>
 
 <p>Rather than requiring complicated graphs and configuration XML, state in Gauntlet is modeled by a single type (conforming to <code><a href="Protocols/Transitionable.html">Transitionable</a></code>) that is capable of determining whether transitions to other instances of itself are allowed. </p>
@@ -77,9 +90,9 @@
 </code></pre>
 <h2 id='light-weight-objects' class='heading'>Light Weight Objects</h2>
 
-<p>Gauntlet doesn&rsquo;t require you subclass your objects from some abstract root machine or manage class hierarchies of behavior. Instead, a simple light weight <code><a href="Classes/StateMachine.html">StateMachine</a></code> class is available for you to compose into your own types and behaviors. </p>
+<p>Gauntlet doesn’t require you to subclass objects from some abstract root machine or manage class hierarchies of behavior. Instead, a simple light weight <code><a href="Classes/StateMachine.html">StateMachine</a></code> class is available to compose into your types and behaviors. </p>
 
-<p>A <code><a href="Classes/StateMachine.html">StateMachine</a></code> gets created with a <code><a href="Protocols/Transitionable.html">Transitionable</a></code> type and an initial state. Transitioning states is a simple method call. A <code>Combine</code> publisher give subscribers the ability to react to transitions:</p>
+<p>A <code><a href="Classes/StateMachine.html">StateMachine</a></code> gets created with a <code><a href="Protocols/Transitionable.html">Transitionable</a></code> type and an initial state. Transitioning states is a simple method call. A <code>Combine</code> publisher gives subscribers the ability to react to transitions:</p>
 <pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">MyClass</span> <span class="p">{</span>
   <span class="k">let</span> <span class="nv">stateMachine</span> <span class="o">=</span> <span class="kt">StateMachine</span><span class="p">(</span><span class="nv">initialState</span><span class="p">:</span> <span class="kt">TrafficLight</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
   <span class="k">let</span> <span class="nv">subscription</span><span class="p">:</span> <span class="kt">AnyCancellable</span>
@@ -150,7 +163,7 @@
 <span class="p">}</span>
 </code></pre>
 
-<p>Values get associated when a state change is queued:</p>
+<p>Values get associated when a transition is requested:</p>
 <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">connect</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">let</span> <span class="nv">task</span> <span class="o">=</span> <span class="nf">makeTask</span><span class="p">(</span><span class="nv">for</span><span class="p">:</span> <span class="n">myURL</span><span class="p">)</span> <span class="p">{</span> <span class="n">json</span><span class="p">,</span> <span class="n">error</span> <span class="k">in</span>
     <span class="k">guard</span> <span class="n">error</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">else</span> <span class="p">{</span>
@@ -164,7 +177,7 @@
 <span class="p">}</span>
 </code></pre>
 
-<p>…And can be pulled out again when handling transitions:</p>
+<p>…And can be pulled out again when handling state changes:</p>
 <pre class="highlight swift"><code><span class="n">subscription</span> <span class="o">=</span> <span class="n">stateMachine</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">sink</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="k">self</span><span class="p">]</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span> <span class="k">in</span>
   <span class="k">switch</span> <span class="p">(</span><span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">case</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">.</span><span class="nf">success</span><span class="p">(</span><span class="k">let</span> <span class="nv">json</span><span class="p">)):</span>
@@ -188,24 +201,32 @@
 <li><p><code>queue(_:)</code> has been renamed to <code>transition(to:)</code>. This is simple enough, but is indicative of a larger change… </p></li>
 <li><p>Timing is version 5 is subtlely different in significant ways. In version 4, state changes were queued onto the next cycle of the run loop. Then the state change and the (now obsolete) <code>didTransition</code> would run “together”. As a result, we could rely on the <code>state</code> property of the state machine and the <code>to</code> argument to <code>didTransition</code> to be in agreement.</p>
 
-<p>As of version 5, this has changd. Now state changes are applied to the state machine synchronously. But notification of these changes (via publication to the <code>publisher</code> property) still happens asynchronously (to allow for recursive transitions without overflowing the stack).</p>
+<p>As of version 5, this has changed. Now state changes are applied to the state machine synchronously. But notification of these changes (via publication to the <code>publisher</code> property) still happens asynchronously (to allow for recursive transitions without overflowing the stack).</p>
 
 <p>As a result, the <code>state</code> of the machine is much more stable and less prone to timing-related edge cases. Yay! But we can no longer assume the <code>to</code> arguments of our subscriptions to <code>publisher</code> reflect the current <code>state</code> of the machine. Boo? </p>
 
-<p>Subscribers will always get all state changes and will always receive them in the order they were made, so in practice I&rsquo;m hoping this isn’t a big deal. But if you were relying on notifications of state change happening along side the actual change, itself, it’s time to revisit those assumptions.</p></li>
-<li><p>In version 4, becasue <code>state</code> was set asyncronously, it was surpassingly hard to test unless the transition happened to trigger some behavior observable to the test case. So Gauntlet provided <code>willTransition</code> and <code>didTransition</code> notifications that would fire if <code>GAUNTLET_POST_TEST_NOTIFICATIONS</code> was set in the environment.</p>
+<p>Subscribers will always get all state changes and will always receive them in the order they were made, so in practice I&rsquo;m hoping this isn’t a big deal. But if you were relying on notifications of state change happening along side the actual change itself, it’s time to revisit those assumptions.</p></li>
+<li><p>In version 4, because <code>state</code> was set asyncronously, it was surpassingly hard to test unless the transition happened to trigger some behavior observable to the test case. So Gauntlet provided <code>willTransition</code> and <code>didTransition</code> notifications that would fire if <code>GAUNTLET_POST_TEST_NOTIFICATIONS</code> was set in the environment.</p>
 
 <p>Now that transitions happen syncronously in version 5, these are no longer necessary and have been removed.</p></li>
 </ul>
 <h2 id='api' class='heading'>API</h2>
 
 <p>Full API documentation <a href="https://jemmons.github.io/Gauntlet/Classes/StateMachine.html">can be found here</a>.</p>
+<h2 id='contributing' class='heading'>Contributing</h2>
+
+<p><a href="https://github.com/jemmons/Gauntlet/pulls">Pull requests</a> are welcome! Please keep in mind this is a weekend project, though, so reviews times measured in “<em>n</em> of weeks” are to be expected.</p>
+
+<p>Found a bug? Want a feature? <a href="https://github.com/jemmons/Gauntlet/issues">Issues</a> are the way to communicate! Though the same disclaimers around response times apply. Thank you for your patience.</p>
+<h2 id='license' class='heading'>License</h2>
+
+<p><code>Gauntlet</code> is released under the MIT license. <a href="https://github.com/jemmons/Gauntlet/blob/master/LICENSE">See LICENSE</a> for details.</p>
 
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-11-04)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.11.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+          <p>&copy; 2019 <a class="link" href="https://figure.ink" target="_blank" rel="external">Joshua Emmons</a>. All rights reserved. (Last updated: 2019-11-19)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.12.0</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
     </div>
