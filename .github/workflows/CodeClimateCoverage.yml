@@ -1,4 +1,4 @@
-name: Upload Code Climate Coverage
+name: master # Also the name of the badge displayed in README.md
 
 on: 
   push:
@@ -27,3 +27,6 @@ jobs:
       run: xcrun xccov view --report --json ./build.xcresult > coverage.json
     - name: Test Reporter After
       run: ./cc-test-reporter after-build -t xccov -r ${{ secrets.CODECLIMATE_TOKEN }}
+      env:
+        GIT_COMMIT_SHA: ${{github.sha}}
+        GIT_BRANCH: master
