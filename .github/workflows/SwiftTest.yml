@@ -11,6 +11,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
     - name: Build
-      run: swift build
+      run: swift build --build-tests
     - name: Test
       run: swift test --skip-build --skip-update
