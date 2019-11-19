@@ -1,6 +1,7 @@
 # Gauntlet
 
 [![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-success)](https://github.com/Apple/swift-package-manager) [![Documentation](https://jemmons.github.io/Gauntlet/badge.svg)](https://jemmons.github.io/Gauntlet/Protocols/Transitionable.html)
+[![Maintainability](https://api.codeclimate.com/v1/badges/71411cade9c7dd7d9c9c/maintainability)](https://codeclimate.com/github/jemmons/Gauntlet/maintainability)[![Test Coverage](https://api.codeclimate.com/v1/badges/71411cade9c7dd7d9c9c/test_coverage)](https://codeclimate.com/github/jemmons/Gauntlet/test_coverage)
 
 Gauntlet is a swift-friendly [state machine](https://en.wikipedia.org/wiki/Finite-state_machine) focusing on simple configuration and light weight objects. It was originally inspired by [a series of blog posts over on figure.ink](http://www.figure.ink/blog/2015/1/31/swift-state-machines-part-1), but has evolved substantially since then.
 
