@@ -8,6 +8,10 @@ jobs:
     runs-on: macOS-latest
 
     steps:
+    - name: Echo Stuff
+      run: echo MYTHING
+      env:
+        MYTHING: ${GITHUB_REF#refs/heads/}
     - name: Checkout
       uses: actions/checkout@v1
     - name: Build
