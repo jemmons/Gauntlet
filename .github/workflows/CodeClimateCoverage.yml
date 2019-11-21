@@ -13,6 +13,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v1
+    - name: Parse Branch
+      run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+      id: parseBranch      
     - name: Fetch CodeClimate Test Reporter 
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-darwin-amd64 > ./cc-test-reporter
@@ -29,4 +32,4 @@ jobs:
       run: ./cc-test-reporter after-build -t xccov -r ${{ secrets.CODECLIMATE_TOKEN }}
       env:
         GIT_COMMIT_SHA: ${{github.sha}}
-        GIT_BRANCH: master
+        GIT_BRANCH: ${{steps.parseBranch.outputs.branch}}
