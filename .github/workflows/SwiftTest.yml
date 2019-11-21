@@ -12,7 +12,9 @@ jobs:
       run: echo "::set-output name=branch::${GITHUB_REF#refs/pull/}"
       id: stuff
     - name: more echo
-      run: echo ${{steps.stuff.outputs.branch}}
+      run: echo $OTHER
+      env:
+        OTHER: ${GITHUB_REF#refs/pull/}
     - name: Checkout
       uses: actions/checkout@v1
     - name: Build
