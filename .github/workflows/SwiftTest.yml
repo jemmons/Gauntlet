@@ -9,9 +9,10 @@ jobs:
 
     steps:
     - name: Echo Stuff
-      run: echo $MYTHING
+      run: echo $MYTHING $OTHER
       env:
         MYTHING: ${GITHUB_REF#refs/heads/}
+        OTHER: Other String
     - name: Checkout
       uses: actions/checkout@v1
     - name: Build
