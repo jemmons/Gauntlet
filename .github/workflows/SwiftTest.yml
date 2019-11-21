@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Echo Stuff
-      run: echo MYTHING
+      run: echo $MYTHING
       env:
         MYTHING: ${GITHUB_REF#refs/heads/}
     - name: Checkout
