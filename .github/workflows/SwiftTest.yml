@@ -9,13 +9,14 @@ jobs:
 
     steps:
     - name: Echo Stuff
-      run: echo $MYTHING $OTHER
-      env:
-        MYTHING: ${{GITHUB_REF#refs/heads/}}
-        OTHER: Other String
+      run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+      id: stuff
+    - name: more echo
+      run: echo ${{steps.stuff.outputs.branch}}
     - name: Checkout
       uses: actions/checkout@v1
     - name: Build
       run: swift build --build-tests
     - name: Test
       run: swift test --skip-build --skip-update
+      
