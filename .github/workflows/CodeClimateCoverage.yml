@@ -5,31 +5,73 @@ on:
     branches:
       - master
 
+env:
+  CC_VER: "0.7.0"
+  CC_DIR: CodeClimateBin
+  RESULT_PATH: Output.xcresult
+  BUILD_CACHE_PATH: BuildCache
+
 jobs:
   upload_code_coverage:
+
     name: Upload Code Coverage
     runs-on: macOS-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v1
-    - name: Parse Branch
-      run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
-      id: parseBranch      
-    - name: Fetch CodeClimate Test Reporter 
+
+    - name: Parse Swift Version
+      id: parse_swift_version
       run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-darwin-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-    - name: Generate Project # swift build doesn't report coverage in a format CC understands, so we generage a project and build with xcode.
-      run: swift package generate-xcodeproj --enable-code-coverage
-    - name: Test Reporter Before 
-      run: ./cc-test-reporter before-build
-    - name: Build Tests
-      run: xcodebuild test -scheme Gauntlet-Package -resultBundleVersion 3 -resultBundlePath ./build.xcresult
+        [[ `swift -version` =~ ([0-9]+\.[0-9]+(\.[0-9]+)?) ]]
+        echo "::set-output name=version::$BASH_REMATCH"
+
+    - name: Parse Branch
+      id: parse_branch      
+      run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+
+    - name: Parse Project
+      id: parse_project      
+      run: echo "::set-output name=name::${GITHUB_REPOSITORY#*/}"
+
+    - name: Cache CodeClimate Test Reporter
+      id: cc_cache
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.CC_DIR }}
+        key: CCTestReporter-${{ runner.OS }}-CC${{ env.CC_VER }}
+        restore-keys: |
+          CCTestReporter-${{ runner.OS }}-
+
+    - name: Fetch CodeClimate Test Reporter 
+      if: steps.cc_cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p $CC_DIR
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-$CC_VER-darwin-amd64 > ./$CC_DIR/cc-test-reporter
+        chmod +x ./$CC_DIR/cc-test-reporter
+
+    - name: Cache Build
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.BUILD_CACHE_PATH}}
+        key: xcodebuild-${{ runner.OS }}-swift${{ steps.parse_swift_version.outputs.version }}-${{ hashFiles('Sources/**/*.swift') }}
+        restore-keys: |
+          xcodebuild-${{ runner.OS }}-swift${{ steps.parse_swift_version.outputs.version }}-
+          xcodebuild-${{ runner.OS }}-
+
+    - name: Test Reporter Before
+      run: $CC_DIR/cc-test-reporter before-build
+
+    - name: Build and Test
+      run: xcodebuild test -scheme ${{ steps.parse_project.outputs.name }} -enableCodeCoverage YES -resultBundlePath $RESULT_PATH -derivedDataPath $BUILD_CACHE_PATH
+
     - name: Parse Coverage
-      run: xcrun xccov view --report --json ./build.xcresult > coverage.json
-    - name: Test Reporter After
-      run: ./cc-test-reporter after-build -t xccov -r ${{ secrets.CODECLIMATE_TOKEN }}
+      run: xcrun xccov view --report --json $RESULT_PATH > coverage.json
+
+    - name: Test Reporter Format and Upload
+      run: $CC_DIR/cc-test-reporter after-build -t xccov -r ${{ secrets.CODECLIMATE_TOKEN }}
       env:
         GIT_COMMIT_SHA: ${{github.sha}}
-        GIT_BRANCH: ${{steps.parseBranch.outputs.branch}}
+        GIT_BRANCH: ${{steps.parse_branch.outputs.branch}}
+    
