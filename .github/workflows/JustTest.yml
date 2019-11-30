@@ -21,9 +21,6 @@ jobs:
     - name: Shared Values
       id: shared
       uses: jemmons/SharedValuesAction@master
-      with:
-        githubRef: ${{ github.ref }}
-        githubRepository: ${{ github.repository }}
 
     - name: Cache Build
       uses: actions/cache@v1
