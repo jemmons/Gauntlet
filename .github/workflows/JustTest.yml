@@ -20,7 +20,7 @@ jobs:
 
     - name: Shared Values
       id: shared
-      uses: jemmons/SharedValuesAction@master
+      uses: jemmons/SharedValuesAction@v1
 
     - name: Cache Build
       uses: actions/cache@v1
