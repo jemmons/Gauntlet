@@ -1,0 +1,37 @@
+name: Tests Pass for Pull Request
+
+
+on: [pull_request]
+
+
+env:
+  RESULT_PATH: Output.xcresult
+  BUILD_CACHE_PATH: BuildCache
+
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: macOS-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Parse Swift Version
+      id: parse_swift_version
+      run: |
+        [[ `swift -version` =~ ([0-9]+\.[0-9]+(\.[0-9]+)?) ]]
+        echo "::set-output name=version::$BASH_REMATCH"
+
+    - name: Cache Build
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.BUILD_CACHE_PATH }}
+        key: xcodebuild-${{ runner.OS }}-swift${{ steps.parse_swift_version.outputs.version }}-${{ hashFiles('Sources/**/*.swift') }}
+        restore-keys: |
+          xcodebuild-${{ runner.OS }}-swift${{ steps.parse_swift_version.outputs.version }}-
+          xcodebuild-${{ runner.OS }}-
+
+    - name: Build and Test
+      run: xcodebuild test -scheme ${{ steps.parse_project.outputs.name }} -enableCodeCoverage YES -resultBundlePath $RESULT_PATH -derivedDataPath $BUILD_CACHE_PATH
