@@ -24,6 +24,10 @@ jobs:
         [[ `swift -version` =~ ([0-9]+\.[0-9]+(\.[0-9]+)?) ]]
         echo "::set-output name=version::$BASH_REMATCH"
 
+    - name: Parse Project
+      id: parse_project      
+      run: echo "::set-output name=name::${GITHUB_REPOSITORY#*/}"
+
     - name: Cache Build
       uses: actions/cache@v1
       with:
