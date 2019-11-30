@@ -54,7 +54,7 @@ jobs:
     - name: Cache Build
       uses: actions/cache@v1
       with:
-        path: ${{ env.BUILD_CACHE_PATH}}
+        path: ${{ env.BUILD_CACHE_PATH }}
         key: xcodebuild-${{ runner.OS }}-swift${{ steps.parse_swift_version.outputs.version }}-${{ hashFiles('Sources/**/*.swift') }}
         restore-keys: |
           xcodebuild-${{ runner.OS }}-swift${{ steps.parse_swift_version.outputs.version }}-
@@ -67,7 +67,11 @@ jobs:
       run: xcodebuild test -scheme ${{ steps.parse_project.outputs.name }} -enableCodeCoverage YES -resultBundlePath $RESULT_PATH -derivedDataPath $BUILD_CACHE_PATH
 
     - name: Parse Coverage
-      run: xcrun xccov view --report --json $RESULT_PATH > coverage.json
+      uses: jemmons/GenerateXCCovJSONAction@v1
+      with:
+        resultfile: ${{ env.RESULT_PATH }}
+        outputpath: coverage.json
+        targets: ${{ steps.parse_project.outputs.name }}
 
     - name: Test Reporter Format and Upload
       run: $CC_DIR/cc-test-reporter after-build -t xccov -r ${{ secrets.CODECLIMATE_TOKEN }}
